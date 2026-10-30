@@ -43,10 +43,11 @@
 <!-- ================= ANALYZE ================= -->
 <section class="page" id="analyze">
   <div class="print-only print-head"><div><span class="wm" dir="ltr">Aqar<span>Math</span></span><div id="printSub"></div></div><div id="printDate"></div></div>
-  <h1 data-ar="دخّل خطة السداد، وشوف الوحدة هتكسّبك إيه">Enter the payment plan. See what the unit really earns.</h1>
-  <p class="sub" data-ar="كل رقم بيتحسب وإنت بتكتب: الإيجار المتوقع من وحدات مماثلة، والعائد بعد التضخم وبالدولار، وإمتى فلوسك ترجع. اضغط على أي مصطلح عليه خط عشان تعرف معناه.">Every number updates as you type: expected rent from comparable listings, returns after inflation and in dollars, and when your money comes back. Tap any underlined term to see what it means.</p>
-  <p class="meta-line"><span data-ar="الفايدة والتضخم والدولار محدثين 21–23 أكتوبر 2026 · الإعلانات بيانات تجريبية ·">Rates, inflation and FX updated 21–23 Oct 2026 · listings are sample data ·</span> <button class="linkbtn" type="button" data-tab="method" data-ar="إزاي بنحسب">How we calculate</button></p>
+  <h1 data-ar="قبل ما تمضي على خطة سداد، اعرف هتكسب أكتر من شهادة البنك ولا لأ — بالجنيه وبالدولار.">Before you sign a payment plan, see if it beats a bank certificate — in pounds and dollars.</h1>
+  <p class="sub" data-ar="كل رقم بيتحسب وإنت بتكتب: الإيجار المتوقع من تقارير السوق، والعائد بعد التضخم وبالدولار، وإمتى فلوسك ترجع. اضغط على أي مصطلح عليه خط عشان تعرف معناه.">Every number updates as you type: expected rent from published market reports, returns after inflation and in dollars, and when your money comes back. Tap any underlined term to see what it means.</p>
+  <p class="meta-line"><span data-ar="الفايدة والتضخم والدولار محدثين 21–23 أكتوبر 2026 · الإيجارات من Knight Frank الربع التاني 2026 ·">Rates, inflation and FX updated 21–23 Oct 2026 · rents from Knight Frank Q2 2026 ·</span> <button class="linkbtn" type="button" data-tab="method" data-ar="إزاي بنحسب">How we calculate</button></p>
 
+  <button class="vchip no-print" id="vchip" type="button"></button>
   <div class="analyze">
     <aside class="panel inputs" aria-label="Unit and plan" id="inputs"></aside>
 
@@ -63,21 +64,18 @@
         </label>
       </div>
 
-      <div class="story" id="story" aria-live="polite"><span class="badge" id="storyBadge"></span><h2 id="storyTitle"></h2><ol id="storyList"></ol><div class="note-cash" id="cashNote"></div></div>
+      <div class="story" id="story" aria-live="polite"><span class="badge" id="storyBadge"></span><h2 id="storyTitle"></h2><div class="sbars" id="storyBars"></div><div class="swarn" id="storyWarn"></div><ol id="storyList"></ol><button class="linkbtn smore no-print" type="button" id="storyMore"></button><div class="note-cash" id="cashNote"></div></div>
 
       <div class="panel no-print" id="actionsPanel">
         <div class="actions">
-          <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.2Z"/></svg><span data-ar="ابعتلي التقرير على واتساب">Get this report on WhatsApp</span></a>
+          <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener" aria-disabled="true"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.2Z"/></svg><span data-ar="ابعت لهشام لاستشارة مجانية">Send to Hesham for a free consultation</span></a>
           <button class="btn ghost" id="pdfBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span data-ar="تحميل PDF">Download PDF</span></button>
           <button class="btn ghost" id="shareBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1m2 5a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span data-ar="انسخ لينك الوحدة">Copy link to this unit</span></button>
         </div>
+        <label class="consent"><input type="checkbox" id="consent"> <span data-ar="موافق إن الأرقام اللي ظاهرة هنا تتبعت لهشام روديني على واتساب عشان يرد عليّا.">I agree to send the numbers shown here to Hesham Rodiny on WhatsApp so he can reply.</span></label>
+        <p class="disclose-line" data-ar="هشام روديني شغال في مبيعات العقارات، وممكن يكلمك عن وحدات بياخد عليها عمولة. الحسبة نفسها بنفس المعادلات لكل وحدة، ومحدش بيدفع عشان نتيجته تتغير.">Hesham Rodiny works in real estate sales and may discuss units he earns a commission on. The calculation uses the same formulas for every unit, and no one pays to change a result.</p>
         <div class="share-out mt" id="shareOut" hidden><input id="shareInput" readonly aria-label="Share link"><button class="btn ghost" type="button" id="shareCopy2" data-ar="نسخ">Copy</button></div>
-        <div class="consult">
-          <span data-ar="عايز حد يراجع الحسبة معاك؟ استشارة مجانية مع">Want someone to review the numbers with you? Free consultation with</span>
-          <b data-ar="هشام روديني">Hesham Rodiny</b>
-          <span class="num" style="user-select:all">011 45 72 1501</span>
-          <label class="field-inline" for="broker" style="margin-inline-start:auto"><span data-ar="بروكر؟ اسمك على التقرير">Broker? Your name on the report</span><input id="broker" style="border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;width:170px;background:var(--surface)"></label>
-        </div>
+        <p class="privacy-line"><span data-ar="خصوصيتك: الأرقام بتفضل في المتصفح بتاعك بس. واتساب بيبعت اللي ظاهر في الرسالة وبس، ولو عايز نمسح محادثتك ابعت «امسح».">Privacy: your inputs stay in your browser. WhatsApp sends only what you see in the message; reply “delete” and we remove the chat.</span> <button class="linkbtn" type="button" id="clearData" data-ar="امسح بياناتي من الجهاز">Clear my data on this device</button></p>
       </div>
 
       <div class="panel">
@@ -119,11 +117,16 @@
         <p class="note" id="altNote"></p>
       </div>
 
-      <div class="panel no-print">
-        <div class="ph"><h2 data-ar="إيجارات وحدات مماثلة معروضة">Comparable rental listings</h2><p id="compHint"></p></div>
-        <div class="scroll"><table class="t" id="compTable"></table></div>
-        <p class="note" data-ar="بيانات تجريبية مضبوطة على مستوى السوق حسب Knight Frank (الربع التاني 2026). الإيجار المستخدم هو الوسيط بعد خصم نسبة التفاوض.">Sample listings calibrated to Knight Frank market levels (Q2 2026). The rent used is the median after a negotiation discount.</p>
+      <div class="panel">
+        <div class="ph"><h2 data-ar="الإيجار اللي استخدمناه ومنين">The rent we used, and where it comes from</h2><p id="rentHint"></p></div>
+        <div class="scroll"><table class="t" id="rentTable"></table></div>
+        <p class="note" id="rentNote"></p>
       </div>
+
+      <details class="panel no-print" id="brokerPanel">
+        <summary data-ar="بروكر؟ حط اسمك على التقرير (اختياري)">Broker? Put your name on the report (optional)</summary>
+        <label class="field-inline mt" for="broker"><span data-ar="الاسم اللي يظهر في الـPDF">Name shown on the PDF</span><input id="broker" style="border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;width:200px;background:var(--surface)"></label>
+      </details>
 
       <details class="panel" id="assumePanel">
         <summary data-ar="الافتراضات ومصادر الأرقام">Assumptions and sources</summary>
@@ -139,7 +142,7 @@
 <!-- ================= COMPARE ================= -->
 <section class="page" id="compare" hidden>
   <h1 data-ar="قارن وحدتين جنب بعض">Compare two units side by side</h1>
-  <p class="sub" data-ar="الوحدة أ هي اللي في صفحة التحليل. غيّر الوحدة ب هنا، أو حمّل فرصة من الفرص المختارة.">Unit A is the one on the Analyze page. Edit Unit B here, or load one from Opportunities.</p>
+  <p class="sub" data-ar="الوحدة أ هي اللي في صفحة التحليل. غيّر الوحدة ب هنا.">Unit A is the one on the Analyze page. Edit Unit B here.</p>
   <div class="units mt" id="unitCards"></div>
   <div class="verdict"><div class="bar" id="vBar"></div><div><h2 id="vTitle"></h2><p id="vText"></p></div></div>
   <div class="grid2 mt">
@@ -160,7 +163,7 @@
       <div class="scroll"><table class="t" id="devTable"></table></div>
       <p class="note"><span data-ar="المصدر: The Board Consulting عبر">Source: The Board Consulting via</span> <a href="https://www.zawya.com/en/business/construction/top-10-egyptian-developers-sales-rise-to-13.26bln-in-h1-2026-460280" target="_blank" rel="noopener">Zawya</a></p></div>
     <div class="col">
-      <div class="panel"><div class="ph"><h2 data-ar="إيجار المتر للمكاتب حسب المنطقة">Office rent per m² by zone</h2><p data-ar="جنيه/م²/شهر · تجريبي">EGP/m²/month · sample</p></div><div class="chart-box" id="zoneChart" style="height:190px" role="img" aria-label="Office rent per m² by zone"></div></div>
+      <div class="panel"><div class="ph"><h2 data-ar="إيجار المتر للمكاتب حسب المبنى والتشطيب">Office rent per m² by building and finishing</h2><p data-ar="جنيه/م²/شهر · Knight Frank الربع التاني 2026">EGP/m²/month · Knight Frank Q2 2026</p></div><div class="chart-box" id="zoneChart" style="height:190px" role="img" aria-label="Office rent per m² by building grade and finishing"></div></div>
       <div class="panel"><div class="ph"><h2 data-ar="العائد الحقيقي بعد التضخم">Real return after inflation</h2></div><table class="t" id="realTable"></table></div>
     </div>
   </div>
@@ -173,15 +176,6 @@
   <div class="chips mt" role="group" aria-label="Filter" id="newsFilter"></div>
   <div class="news" id="newsList"></div>
   <p class="note" data-ar="متجمعة يوم 29 أكتوبر 2026. الملخصات بصياغتنا، والتفاصيل في المصدر.">Collected 29 October 2026. Summaries are in our own words; details are at each source.</p>
-</section>
-
-<!-- ================= OPPORTUNITIES ================= -->
-<section class="page" id="opps" hidden>
-  <h1 data-ar="فرص مختارة">Selected opportunities</h1>
-  <p class="sub" data-ar="وحدات بتعدّي معايير واضحة. حلّل أي واحدة بنفس الأدوات.">Units that pass clear criteria. Analyze any of them with the same tools.</p>
-  <div class="chips mt"><span class="chip static" data-ar="استلام فوري أو خلال سنة">Ready or delivering within a year</span><span class="chip static" data-ar="مطوّر بسجل تسليم معروف">Developer with a delivery record</span><span class="chip static" data-ar="عائد أعلى من متوسط المنطقة">Yield above the zone median</span></div>
-  <div class="opps" id="oppList"></div>
-  <div class="disclose" data-ar="الفرص دي أمثلة توضيحية لحد ما نضيف وحدات حقيقية. محدش بيدفع عشان يظهر هنا، ولو أي فرصة ليها علاقة تجارية بالمنصة هيتكتب ده جنبها بوضوح.">These are illustrative examples until real units are added. No one pays to appear here, and any commercial link to the platform is stated next to the unit.</div>
 </section>
 
 <!-- ================= METHOD ================= -->
@@ -197,6 +191,7 @@
     <span data-ar="الأرقام تقديرية للتوضيح وليست نصيحة استثمارية.">Estimates for illustration, not investment advice.</span>
     <span><button class="linkbtn" type="button" data-tab="method" data-ar="إزاي بنحسب والإفصاح">How we calculate and disclosure</button></span>
     <span><span data-ar="أسسها هشام روديني ·">Founded by Hesham Rodiny ·</span> <span class="phone num">011 45 72 1501</span></span>
+    <span data-ar="مجاني بالكامل · مفيش تسجيل">Free · no sign-up</span>
   </div>
 </footer>
 

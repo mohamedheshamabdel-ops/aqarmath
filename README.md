@@ -5,7 +5,7 @@ Static site on Vercel (no build step). Every push to `main` deploys to https://a
 ## Files
 - `index.html` — page markup (English + Arabic, switched in the page).
 - `styles.css` — design tokens and layout (light and dark).
-- `engine.js` — the calculation engine: payment plan, cash value, rent, resale, fees, IRR, NPV, break-even, score. No DOM.
+- `engine.js` — the calculation engine: payment plan, cash value, rent, resale, fees, IRR, NPV, break-even, beats-the-certificate check. No DOM.
 - `app.js` — the interface: inputs, story, charts, WhatsApp, PDF, share links, saved state.
 - `tests/engine.test.js` — run `node tests/engine.test.js`.
 - `og.png`, `favicon.svg`, `vercel.json`.

@@ -8,11 +8,6 @@ const PHONE = '201145721501', PHONE_TXT = '011 45 72 1501';
 const DESTS = [{id:'nc',en:'Fifth Settlement, New Cairo',ar:'التجمع الخامس',live:true},{id:'cap',en:'New Capital',ar:'العاصمة الإدارية'},{id:'zayed',en:'Sheikh Zayed',ar:'الشيخ زايد'},{id:'nco',en:'North Coast',ar:'الساحل الشمالي'}];
 const TYPES = [{id:'office',en:'Office',ar:'مكتب إداري',live:true},{id:'apt',en:'Apartment',ar:'شقة سكنية'},{id:'svc',en:'Serviced apartment',ar:'شقة فندقية'},{id:'villa',en:'Villa / townhouse',ar:'فيلا / تاون هاوس'},{id:'retail',en:'Retail shop',ar:'محل تجاري'},{id:'clinic',en:'Clinic',ar:'عيادة'}];
 const FIN = {full:{en:'Fitted',ar:'كامل التشطيب'}, semi:{en:'Semi-finished',ar:'نص تشطيب'}, core:{en:'Core & shell',ar:'Core & Shell'}};
-const LISTINGS = [
-  ['s90','full',85,128000,'Property Finder',3],['s90','full',120,186000,'Aqarmap',6],['s90','full',200,292000,'Property Finder',9],['s90','semi',150,160000,'Bayut',4],['s90','core',300,228000,'Aqarmap',12],['s90','full',60,91000,'Bayut',2],
-  ['n90','full',100,136000,'Property Finder',5],['n90','semi',130,124000,'Aqarmap',8],['n90','full',75,100000,'Bayut',1],['n90','core',250,170000,'Property Finder',15],
-  ['bank','full',110,160000,'Aqarmap',2],['bank','full',90,131000,'Property Finder',7],['bank','semi',160,162000,'Bayut',10],['bank','core',400,290000,'Aqarmap',6],
-  ['d5','full',95,119000,'Property Finder',3],['d5','semi',120,106000,'Aqarmap',5],['d5','full',150,190000,'Bayut',11],['d5','core',220,137000,'Property Finder',4]];
 const DEVS = [['Talaat Moustafa Group','مجموعة طلعت مصطفى',219],['Palm Hills Developments','بالم هيلز',94],['Mountain View','ماونتن فيو',63.7],['Emaar Misr','إعمار مصر',60.9],['Hyde Park Developments','هايد بارك',52.9],['Tatweer Misr','تطوير مصر',50.5],['Madaar Ras El Hekma','مدار رأس الحكمة',44],['G Developments','جي ديفلوبمنتس',30],['Madinet Masr','مدينة مصر',28.4],['La Vista Developments','لافيستا',26.5]];
 const NEWS = [
   {d:'2026-10-23',c:'policy',src:'Banker',url:'https://banker.news/157318',
@@ -44,11 +39,6 @@ const NEWS = [
    ar:['الإيجارات في التجمع تزيد 10% وأسعار إعادة البيع 3.1% بس','بيانات JLL للربع الأول 2026 بتبيّن إن الإيجارات بتزيد أسرع بكتير من أسعار إعادة البيع في التجمع.','إيجار بيزيد مع سعر ثابت يعني عائد أعلى، ودي أساس افتراض زيادة الإيجار 10%.']}
 ];
 const CATS = {all:{en:'All',ar:'الكل'}, economy:{en:'Economy',ar:'اقتصاد'}, policy:{en:'Rates, tax & policy',ar:'فايدة وضرائب وسياسات'}, realestate:{en:'Real estate',ar:'عقارات'}, companies:{en:'Companies',ar:'شركات'}};
-const OPPS = [
-  {en:'Fitted office',ar:'مكتب كامل التشطيب',zone:'s90',finish:'full',area:90,price:16200000,down:100,years:0,delm:0,dev:'big',maint:0,source:'resale'},
-  {en:'Semi-finished office',ar:'مكتب نص تشطيب',zone:'bank',finish:'semi',area:140,price:18900000,down:30,years:4,delm:0,dev:'big',maint:8,source:'developer'},
-  {en:'Fitted office',ar:'مكتب كامل التشطيب',zone:'d5',finish:'full',area:70,price:11900000,down:10,years:6,delm:12,dev:'mid',maint:8,source:'developer'},
-  {en:'Fitted office',ar:'مكتب كامل التشطيب',zone:'n90',finish:'full',area:120,price:20400000,down:100,years:0,delm:0,dev:'big',maint:0,source:'resale'}];
 const GL = {
   irr:{en:['IRR (internal rate of return)','The single yearly return that accounts for when every payment goes out and every rent comes in. The fairest way to compare a cash unit with an installment unit.','the rate where the NPV of all cash flows = 0'],ar:['IRR (معدل العائد الداخلي)','نسبة العائد السنوي الواحدة اللي بتاخد في حسابها ميعاد كل قسط بتدفعه وكل إيجار بيدخلك. أعدل طريقة تقارن بيها وحدة كاش بوحدة تقسيط.','النسبة اللي تخلي صافي القيمة الحالية لكل التدفقات = صفر']},
   roi:{en:['ROI (return on investment)','Total profit over the whole holding period, as a share of everything you paid. It ignores how long it took.','(rent + net sale − money paid) ÷ money paid'],ar:['ROI (العائد على الاستثمار)','إجمالي الربح على مدة الاحتفاظ كلها كنسبة من كل اللي دفعته، من غير ما يفرق معاه المدة.','(الإيجار + صافي البيع − المدفوع) ÷ المدفوع']},
@@ -67,27 +57,28 @@ const GL = {
   pv:{en:['Plan value today','What the installment plan is worth in today\'s money at the certificate rate. The gap to the price is the hidden discount of paying later.','down payment + Σ installment ÷ (1 + certificate rate)^time'],ar:['قيمة الخطة النهارده','خطة التقسيط تسوى كام بفلوس النهارده بعائد الشهادة. الفرق بينها وبين السعر هو الخصم المخفي إنك تدفع متأخر.','المقدم + مجموع (القسط ÷ (1 + عائد الشهادة)^الزمن)']},
   cash:{en:['Cash value','What the unit would cost if paid in full today. Growth and resale are measured from this, not from the installment price, so long plans do not look better just because the price is higher. If you leave it blank we estimate it as the plan\'s value today.','entered cash price, or plan value today'],ar:['قيمة الكاش','الوحدة كانت هتتكلف كام لو اتدفعت كاش النهارده. الزيادة وإعادة البيع بتتحسب من الرقم ده مش من سعر التقسيط، عشان الخطط الطويلة متبانش أحسن لمجرد إن سعرها أعلى. لو سبتها فاضية بنقدّرها بقيمة الخطة النهارده.','سعر الكاش اللي دخلته، أو قيمة الخطة النهارده']},
   bench:{en:['Bank certificate benchmark','The safe alternative we compare against: the National Bank of Egypt certificate that matches your holding period. 3 years: 22%, 17.5%, 13%. Otherwise the 5-year certificate at 14.25% paid monthly and reinvested (15.2% a year).',''],ar:['الشهادة اللي بنقارن بيها','البديل الآمن: شهادة البنك الأهلي المناسبة لمدة احتفاظك. 3 سنين: 22% ثم 17.5% ثم 13%. غير كده الشهادة الخمسية 14.25% بتتصرف شهري ويُعاد استثمارها (15.2% في السنة).','']},
-  score:{en:['Investment score','A 0–100 summary: return against the certificate after inflation (50), rent level for the zone (20), delivery timing (15), developer track record (15). A unit that loses to the certificate never scores above 49.',''],ar:['درجة الاستثمار','ملخص من 0 لـ100: العائد مقارنة بالشهادة بعد التضخم (50)، مستوى الإيجار في المنطقة (20)، ميعاد الاستلام (15)، سجل المطوّر (15). أي وحدة بتخسر قدام الشهادة مش بتعدّي 49.','']},
+  beats:{en:['Beats the certificate?','Yes when your yearly return after inflation is at least what the matching National Bank of Egypt certificate earns after inflation over the same holding period.','IRR after inflation ≥ certificate after inflation'],ar:['أحسن من الشهادة؟','أيوه لو عائدك السنوي بعد التضخم ≥ عائد شهادة البنك الأهلي المناسبة بعد التضخم على نفس المدة.','IRR بعد التضخم ≥ الشهادة بعد التضخم']},
+  rent:{en:['Market rent','Rent per m² per month from Knight Frank\'s Cairo office review (Q2 2026): Grade A business parks about $348/m²/year, Grade B about $283.5, converted at 54.58 EGP. Semi-finished units are assumed to rent at 70% of fitted, core & shell at 50%. We take 5% off for negotiation. If you have a real quote, enter it under More details.','fitted rent × finishing share × (1 − negotiation)'],ar:['الإيجار السوقي','الإيجار للمتر في الشهر من تقرير Knight Frank لمكاتب القاهرة (الربع التاني 2026): بيزنس بارك Grade A حوالي 348 دولار للمتر في السنة، وGrade B حوالي 283.5، بسعر 54.58 جنيه. النص تشطيب بنفترض إيجاره 70% من الكامل، والـCore 50%. بنخصم 5% للتفاوض. لو عندك عرض إيجار حقيقي دخّله في التفاصيل.','الإيجار كامل التشطيب × نسبة التشطيب × (1 − التفاوض)']},
   grow:{en:['Break-even price growth','The yearly growth in resale value the unit needs to match the certificate over your holding period.','growth where NPV at the certificate rate = 0'],ar:['نمو السعر اللازم','نسبة الزيادة السنوية في سعر إعادة البيع اللي الوحدة محتاجاها عشان تكسب زي الشهادة على مدة الاحتفاظ.','النمو اللي يخلي NPV بعائد الشهادة = صفر']}
 };
 const ICONS = {
+  method:'<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2V5Zm0 14a2 2 0 0 1 2-2h12M8 7h6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   analyze:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   compare:'<path d="M8 3v18M16 3v18M3 8h5M16 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   market:'<path d="M3 17l6-6 4 4 8-8M15 7h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-  news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Zm13 4h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-  opps:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'
+  news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Zm13 4h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
 };
-const TABS = [['analyze','Analyze a unit','حلّل وحدة','Analyze','حلّل'],['compare','Compare','قارن','Compare','قارن'],['market','Market','السوق','Market','السوق'],['news','News','الأخبار','News','الأخبار'],['opps','Opportunities','فرص مختارة','Picks','فرص']];
+const TABS = [['analyze','Analyze a unit','حلّل وحدة','Analyze','حلّل'],['compare','Compare','قارن','Compare','قارن'],['market','Market','السوق','Market','السوق'],['news','News','الأخبار','News','الأخبار'],['method','How we calculate','إزاي بنحسب','How','إزاي']];
 
 /* ================= state ================= */
 const today = new Date();
-const BASE = {name:'',type:'office',dest:'nc',zone:'s90',finish:'full',area:100,price:18000000,disc:0,down:100,dp2:0,dp2m:3,years:0,freq:4,delm:0,delpay:0,maint:0,maintb:6,fin:null,lease:null,cash:0,dev:'big',source:'developer',afterDel:'finish'};
-const DEF_A = {bench:'auto',bank:19,inf:13.9,fx:54.58,dep:8,gold:15,egx:18,rentG:10,vac:8,svc:5,tax:true,saleFee:2.5,resaleDisc:10,transfer:3,dispTax:false,sellM:3,negot:5};
+const BASE = {name:'',type:'office',dest:'nc',zone:'s90',grade:'B',finish:'full',area:100,price:18000000,disc:0,down:100,dp2:0,dp2m:3,years:0,freq:4,delm:0,delpay:0,maint:0,maintb:6,fin:null,lease:null,cash:0,rent:0,dev:'big',source:'resale',afterDel:'finish'};
+const DEF_A = {bench:'auto',bank:19,inf:13.9,fx:54.58,dep:8,gold:15,egx:18,pg:14,rentG:10,vac:15,svc:5,tax:true,saleFee:2.5,resaleDisc:10,transfer:3,dispTax:false,sellM:3,negot:5};
 const S = {
-  lang:'en', cur:'EGP', scn:'base', hold:5, tab:'analyze', news:'all', moreK:false, broker:'',
+  lang:'en', cur:'EGP', scn:'base', hold:5, tab:'analyze', news:'all', moreK:false, moreS:false, broker:'', consent:false,
   contract: today.toISOString().slice(0,10),
   A:{...DEF_A},
-  U:{ a:{...BASE, zone:'d5', finish:'semi', area:120, price:16800000, down:10, years:6, delm:12, maint:8, dev:'mid'},
+  U:{ a:{...BASE, zone:'d5', finish:'semi', area:100, price:20000000, down:15, years:5, delm:12, maint:8, dev:'mid', source:'developer'},
       b:{...BASE} }
 };
 const store = {
@@ -100,7 +91,7 @@ function loadState(){
   const l = store.get('lang'); if (l==='ar'||l==='en') S.lang = l;
   let saved = null;
   try { const q = new URLSearchParams(location.search).get('u'); if (q) { saved = b64d(q); saved._fromLink = true; } } catch(e){}
-  if (!saved) { try { saved = JSON.parse(store.get('aqm:v2') || 'null'); } catch(e){} }
+  if (!saved) { try { saved = JSON.parse(store.get('aqm:v3') || 'null'); } catch(e){} }
   if (saved && typeof saved === 'object') {
     if (saved.a) S.U.a = {...BASE, ...saved.a};
     if (saved.b) S.U.b = {...BASE, ...saved.b};
@@ -110,12 +101,13 @@ function loadState(){
     S._fromLink = !!saved._fromLink;
   }
 }
-let saveT; function saveState(){ clearTimeout(saveT); saveT = setTimeout(() => store.set('aqm:v2', JSON.stringify({a:S.U.a,b:S.U.b,A:S.A,hold:S.hold,scn:S.scn,cur:S.cur,broker:S.broker,contract:S.contract})), 250); }
+let saveT; function saveState(){ clearTimeout(saveT); saveT = setTimeout(() => store.set('aqm:v3', JSON.stringify({a:S.U.a,b:S.U.b,A:S.A,hold:S.hold,scn:S.scn,cur:S.cur,broker:S.broker,contract:S.contract})), 250); }
 
 /* ================= helpers ================= */
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const ar = () => S.lang === 'ar', tx = (e,a) => ar() ? a : e;
 const zoneOf = id => E.ZONES.find(z => z.id === id) || E.ZONES[0];
+const gradeName = g => { const x = E.GRADES[g] || E.GRADES.B; return ar() ? x.ar : x.en; };
 const zoneName = id => { const z = zoneOf(id); return ar() ? z.ar : z.en; };
 const unitName = k => S.U[k].name || tx(k==='a'?'Unit A':'Unit B', k==='a'?'الوحدة أ':'الوحدة ب');
 const fmt = (n,d=0) => Number(n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
@@ -176,6 +168,7 @@ const ZO=()=>E.ZONES.map(z=>[z.id,ar()?z.ar:z.en]), FO=()=>Object.keys(FIN).map(
 const DO=()=>[[0,tx('Ready now','فوري')],[12,tx('In 1 year','بعد سنة')],[24,tx('In 2 years','بعد سنتين')],[36,tx('In 3 years','بعد 3 سنين')],[48,tx('In 4 years','بعد 4 سنين')]];
 const VO=()=>[['big',tx('Major developer','مطوّر كبير')],['mid',tx('Mid-size','متوسط')],['new',tx('New / unknown','جديد / غير معروف')]];
 const QO=()=>[[12,tx('Monthly','شهري')],[4,tx('Quarterly','ربع سنوي')],[2,tx('Semi-annual','نص سنوي')],[1,tx('Annual','سنوي')]];
+const GO=()=>Object.keys(E.GRADES).map(g=>[g,gradeName(g)]);
 const TO=()=>TYPES.map(t=>[t.id,(ar()?t.ar:t.en)+(t.live?'':tx(' (soon)',' (قريباً)')),!t.live]);
 const DSO=()=>DESTS.map(d=>[d.id,(ar()?d.ar:d.en)+(d.live?'':tx(' (soon)',' (قريباً)')),!d.live]);
 const SO=()=>[['developer',tx('From the developer','من المطوّر')],['resale',tx('Resale market','سوق إعادة البيع')]];
@@ -186,9 +179,10 @@ function buildInputs(){
   $('#inputs').innerHTML = `
   <div class="group"><h3>${tx('The unit and the plan','الوحدة وخطة السداد')}</h3><div class="fg">
     ${fld(p('zone'),tx('Zone','المنطقة'),sel(p('zone'),ZO(),u.zone))}
+    ${fld(p('grade'),tx('Building','المبنى'),sel(p('grade'),GO(),u.grade))}
     ${fld(p('finish'),tx('Finishing','التشطيب'),sel(p('finish'),FO(),u.finish))}
     ${fld(p('area'),tx('Area (m²)','المساحة (م²)'),num(p('area'),u.area,1,10))}
-    ${fld(p('delm'),tx('Delivery','الاستلام'),sel(p('delm'),DO(),u.delm))}
+    ${fld(p('delm'),tx('Delivery','الاستلام'),sel(p('delm'),DO(),u.delm),'',true)}
     ${fld(p('price'),tx('Unit price (EGP)','سعر الوحدة (جنيه)'),mon(p('price'),u.price),'',true)}
     ${fld(p('down'),tx('Down payment %','المقدم %'),num(p('down'),u.down,1,0,100))}
     ${fld(p('years'),tx('Installment years','سنين التقسيط'),num(p('years'),cashPlan?0:u.years,1,0,15).replace('<input','<input'+(cashPlan?' disabled':'')),cashPlan?tx('Cash: no installments','كاش: مفيش أقساط'):'')}
@@ -206,6 +200,8 @@ function buildInputs(){
     ${fld(p('maint'),tx('Maintenance deposit %','وديعة الصيانة %'),num(p('maint'),u.maint,0.5,0,20),tx('From the contract','من العقد'))}
     ${fld(p('maintb'),tx('Due before delivery (months)','قبل الاستلام بـ (شهور)'),num(p('maintb'),u.maintb,1,0,24))}
     ${fld('contract',tx('Contract date','تاريخ التعاقد'),`<input type="date" id="contract" value="${S.contract}">`,'',true)}
+    <div class="sublabel">${tx('Rent','الإيجار')}</div>
+    ${fld(p('rent'),tx('Rent quote (EGP/m²/month)','عرض إيجار (ج/م²/شهر)'),num(p('rent'),u.rent||'',10,0,20000),tx('From a broker or a similar listing; replaces the market rent','من بروكر أو إعلان مشابه؛ بيحل محل الإيجار السوقي'),true)}
     <div class="sublabel">${tx('After delivery','بعد الاستلام')}</div>
     ${u.finish!=='full' ? fld(p('afterDel'),tx('Plan for the unit','هتعمل إيه في الوحدة'),sel(p('afterDel'),AO(),u.afterDel),'',true) : ''}
     ${u.finish!=='full' && u.afterDel!=='asis' ? fld(p('fin'),tx('Finishing cost (EGP/m²)','تكلفة التشطيب (ج/م²)'),num(p('fin'),u.fin??E.FIN_COST[u.finish],500),tx('Assumption','افتراض')) : ''}
@@ -226,9 +222,10 @@ function buildAssume(){
     f('inf',tx('Inflation %','التضخم %'),A.inf,0.1,tx('Urban, Sep 2026','الحضر، سبتمبر 2026')),
     f('fx',tx('USD rate','سعر الدولار'),A.fx,0.01,tx('CBE, 21 Oct 2026','المركزي، 21 أكتوبر 2026')),
     f('dep',tx('EGP decline / yr % (base)','تراجع الجنيه سنوياً % (واقعي)'),A.dep,0.5,tx('Cautious +4, strong −3','المتشائم +4، المتفائل −3')),
+    f('pg',tx('Resale price growth / yr % (base)','نمو سعر إعادة البيع سنوياً % (واقعي)'),A.pg,0.5,tx('About inflation; cautious −6 and a 12-month delivery delay, strong +8','قريب من التضخم؛ المتشائم −6 وتأخير استلام سنة، المتفائل +8')),
     f('rentG',tx('Rent growth / yr %','زيادة الإيجار سنوياً %'),A.rentG,0.5,tx('JLL: New Cairo +10% y/y','JLL: التجمع +10% سنوياً')),
     f('negot',tx('Rent below asking %','الإيجار أقل من المطلوب %'),A.negot,1,tx('Deals close below listings','الصفقات بتقفل أقل من الإعلان')),
-    f('vac',tx('Vacancy %','الشغور %'),A.vac,1,tx('Assumption','افتراض')),
+    f('vac',tx('Vacancy %','الشغور %'),A.vac,1,tx('Strata offices 15–20%','المكاتب المفرّقة 15–20%')),
     f('svc',tx('Owner costs %','مصاريف المالك %'),A.svc,1,tx('Assumption','افتراض')),
     f('resaleDisc',tx('Resale below developer price %','إعادة البيع أقل من سعر المطوّر %'),A.resaleDisc,1,tx('Applies to developer purchases','للشرا من المطوّر')),
     f('transfer',tx('Developer transfer fee %','رسوم التنازل للمطوّر %'),A.transfer,0.5,tx('1–5% in contracts; before delivery or last installment','1–5% في العقود؛ قبل الاستلام أو آخر قسط')),
@@ -246,7 +243,7 @@ const ERRTXT = (k,e) => e==='sum' ? tx('Down payments add up to more than 100%',
   : e==='gt' ? tx('Cash price should be at or below the unit price','سعر الكاش لازم يكون أقل من أو يساوي سعر الوحدة')
   : tx(`Enter a value between ${compact(e[0])} and ${compact(e[1])}`,`دخّل رقم بين ${compact(e[0])} و${compact(e[1])}`);
 function showErrors(k, errs){
-  ['price','area','down','years','disc','dp2','delpay','maint','cash'].forEach(f => {
+  ['price','area','down','years','disc','dp2','delpay','maint','cash','rent'].forEach(f => {
     const box = $(`#f-u-${k}-${f}`), msg = $(`#e-u-${k}-${f}`); if (!box || !msg) return;
     const e = errs[f]; box.classList.toggle('bad', !!e); msg.hidden = !e; msg.textContent = e ? ERRTXT(f,e) : '';
   });
@@ -262,36 +259,51 @@ function renderAnalyze(){
   if (Object.keys(errs).length){
     $('#storyBadge').className='badge err'; $('#storyBadge').textContent=tx('Check the highlighted fields','راجع الخانات المعلّمة');
     $('#storyTitle').textContent=tx('Some numbers look off, so we paused the calculation.','فيه أرقام شكلها مش مظبوط، فوقفنا الحسبة لحد ما تتظبط.');
-    $('#storyList').innerHTML=''; $('#cashNote').innerHTML='';
+    $('#storyList').innerHTML=''; $('#cashNote').innerHTML=''; $('#storyBars').innerHTML=''; $('#storyWarn').innerHTML=''; $('#storyMore').hidden=true; $('#vchip').innerHTML=tx('Check the highlighted fields','راجع الخانات المعلّمة'); $('#vchip').className='vchip no-print err';
     setBar(`<span><span class="ml">${tx('Result','النتيجة')}</span><span class="mv">${tx('Check inputs','راجع الأرقام')}</span></span>`);
     return;
   }
   const r=R.a;
-  const beats = r.real >= r.benchReal, gap = (r.real - r.benchReal)*100;
+  const okI = isFinite(r.real), beats = okI && r.beats, gap = (r.real - r.benchReal)*100;
   $('#storyBadge').className = 'badge ' + (beats ? 'good' : 'warn');
   $('#storyBadge').innerHTML = beats ? `✓ ${tx('Beats the bank certificate','أحسن من الشهادة البنكية')}` : `! ${tx('Below the bank certificate','أقل من الشهادة البنكية')}`;
-  $('#storyTitle').innerHTML = tx(
-    `Over ${H} years this unit earns ${pct(r.irr)} a year, ${pct(r.real)} after inflation — ${beats?`${fmt(gap,1)} points more than`:`${fmt(-gap,1)} points less than`} a ${T('bench','bank certificate')} (${pct(r.benchReal)}).`,
-    `على ${H} سنين الوحدة دي بتكسّبك ${pct(r.irr)} في السنة، و${pct(r.real)} بعد التضخم — ${beats?`أعلى بـ${fmt(gap,1)} نقطة من`:`أقل بـ${fmt(-gap,1)} نقطة من`} ${T('bench','الشهادة البنكية')} (${pct(r.benchReal)}).`);
+  $('#storyTitle').innerHTML = !okI ? tx(
+    `If you sell after ${H} years, this unit does not get your money back in this scenario. A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b> a year after inflation.`,
+    `لو بعت بعد ${H} سنين، الوحدة دي مش بترجّع فلوسك في السيناريو ده. ${T('bench','الشهادة البنكية')} بتكسب <b>${pct(r.benchReal)}</b> في السنة بعد التضخم.`) : tx(
+    `After inflation, this unit earns <b>${pct(r.real)}</b> a year over ${H} years. A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b> — ${beats?`<b>${fmt(gap,1)} points less</b>`:`<b>${fmt(-gap,1)} points more</b>`}.`,
+    `بعد التضخم، الوحدة دي بتكسّبك <b>${pct(r.real)}</b> في السنة على ${H} سنين. ${T('bench','الشهادة البنكية')} بتكسب <b>${pct(r.benchReal)}</b> — ${beats?`<b>أقل بـ${fmt(gap,1)} نقطة</b>`:`<b>أعلى بـ${fmt(-gap,1)} نقطة</b>`}.`);
+  // paired bars: real vs real
+  const bv=[[tx('This unit','الوحدة'),okI?r.real:NaN,'u'],[tx('Certificate','الشهادة'),r.benchReal,'c']], bm=Math.max(0.02,...bv.map(b=>isFinite(b[1])?Math.abs(b[1]):0));
+  $('#storyBars').innerHTML=bv.map(([l,v,c])=>`<div class="sb ${c}"><span class="l">${l}</span><span class="track"><i class="${v<0?'neg':''}" style="width:${isFinite(v)?Math.max(2,Math.abs(v)/bm*100):0}%"></i></span><b class="num">${isFinite(v)?pct(v):'—'}</b></div>`).join('')+`<small>${tx('Yearly return after inflation · nominal IRR in the details','العائد السنوي بعد التضخم · الـIRR الاسمي في التفاصيل')}</small>`;
+  // warnings
+  const warns=[];
+  if (r.yieldWarn) warns.push(tx(`The rent is ${pct(r.grossOnCash,0)} of the cash value a year. Office rents in New Cairo rarely pass 12%, so check the price or the rent.`,`الإيجار ${pct(r.grossOnCash,0)} من قيمة الكاش في السنة. إيجارات المكاتب في التجمع نادراً ما تعدّي 12%، فراجع السعر أو الإيجار.`));
+  if (r.cashCapped) warns.push(tx(`This plan implies a cash discount above 30%. We capped it at 30%; ask the developer for the real cash price.`,`الخطة دي معناها خصم كاش أكتر من 30%. وقفناه عند 30%؛ اسأل المطوّر على سعر الكاش الحقيقي.`));
+  if (r.delay) warns.push(tx(`Cautious scenario: delivery is ${r.delay} months late, so rent starts later.`,`السيناريو المتشائم: الاستلام متأخر ${r.delay} شهر، فالإيجار بيبدأ متأخر.`));
+  $('#storyWarn').innerHTML=warns.map(w=>`<p>! ${w}</p>`).join('');
+  $('#vchip').className='vchip no-print '+(beats?'good':'warn');
+  $('#vchip').innerHTML=`<span>${beats?'✓ '+tx('Beats the certificate','أحسن من الشهادة'):'! '+tx('Below the certificate','أقل من الشهادة')}</span><b class="num">${okI?pct(r.real):'—'} <small>${tx('vs','قصاد')} ${pct(r.benchReal)}</small></b><span class="go">${tx('See why ↓','شوف ليه ↓')}</span>`;
   const items=[];
   items.push(r.n ? tx(`You pay ${egp(r.dp)} now, then ${r.n} installments of ${egp(r.inst)} until ${monthY(r.lastPay)}. Total plan: ${egp(r.totalPlan)}.`,`هتدفع ${egp(r.dp)} دلوقتي، وبعدها ${r.n} قسط كل واحد ${egp(r.inst)} لحد ${monthY(r.lastPay)}. إجمالي الخطة: ${egp(r.totalPlan)}.`)
                  : tx(`You pay ${egp(r.totalPlan)} in cash${r.maintAmt?', maintenance included':''}.`,`هتدفع ${egp(r.totalPlan)} كاش${r.maintAmt?'، شامل الصيانة':''}.`));
-  if (r.doFinish) items.push(tx(`After delivery you finish it for about ${egp(r.finCost)} and rent it as fitted.`,`بعد الاستلام هتشطبها بحوالي ${egp(r.finCost)} وتأجرها كاملة التشطيب.`));
-  items.push(tx(`First rent around ${monthY(r.rentStart+1)}: about ${egp(r.rentMonth)} a month. ${T('noi','Net to you')}: ${egp(r.noi1/12)} a month.`,`أول إيجار حوالي ${monthY(r.rentStart+1)}: تقريباً ${egp(r.rentMonth)} في الشهر. ${T('noi','الصافي ليك')}: ${egp(r.noi1/12)} في الشهر.`));
-  if (r.n) items.push(r.coverY>0 ? tx(`From year ${r.coverY}, the rent ${T('coverage','covers the installments')}: the unit starts paying for itself.`,`من السنة ${r.coverY} الإيجار ${T('coverage','بيغطي الأقساط')}: الوحدة بتبدأ تصرف على نفسها.`)
-                                : tx(`The rent does not ${T('coverage','cover the installments')} during the plan; you fund them yourself.`,`الإيجار مش ${T('coverage','بيغطي الأقساط')} خلال الخطة، فهتدفعها من جيبك.`));
+  items.push(tx(`First rent around ${monthY(r.rentStart+1)}: about ${egp(r.rentMonth)} a month (${fmt(r.rentM2)} EGP/m², ${T('rent',r.rentQuoted?'your quote':'market rent')}). ${T('noi','Net to you')}: ${egp(r.noi1/12)} a month.`,`أول إيجار حوالي ${monthY(r.rentStart+1)}: تقريباً ${egp(r.rentMonth)} في الشهر (${fmt(r.rentM2)} ج/م²، ${T('rent',r.rentQuoted?'عرضك':'الإيجار السوقي')}). ${T('noi','الصافي ليك')}: ${egp(r.noi1/12)} في الشهر.`));
   items.push(r.saleBeM>0 ? tx(`If you sell, you get all your money back from ${monthY(r.saleBeM)} (${yrs(r.saleBeM)}), after resale discount and fees — the ${T('salebe','break-even if sold')}.`,`لو بعت، هترجع كل فلوسك من ${monthY(r.saleBeM)} (${yrs(r.saleBeM)})، بعد فرق إعادة البيع والرسوم — ده ${T('salebe','التعادل لو بعت')}.`)
                          : tx('Selling does not return your money within 30 years in this scenario.','البيع مش بيرجّع فلوسك خلال 30 سنة في السيناريو ده.'));
+  if (r.doFinish) items.push(tx(`After delivery you finish it for about ${egp(r.finCost)} and rent it as fitted.`,`بعد الاستلام هتشطبها بحوالي ${egp(r.finCost)} وتأجرها كاملة التشطيب.`));
+  if (r.n) items.push(r.coverY>0 ? tx(`From year ${r.coverY}, the rent ${T('coverage','covers the installments')}: the unit starts paying for itself.`,`من السنة ${r.coverY} الإيجار ${T('coverage','بيغطي الأقساط')}: الوحدة بتبدأ تصرف على نفسها.`)
+                                : tx(`The rent does not ${T('coverage','cover the installments')} during the plan; you fund them yourself.`,`الإيجار مش ${T('coverage','بيغطي الأقساط')} خلال الخطة، فهتدفعها من جيبك.`));
   items.push(r.paybackM>0 ? tx(`Without selling, rent alone returns all your money by ${monthY(r.paybackM)} (${yrs(r.paybackM)}) — the ${T('payback','cash payback')}.`,`من غير بيع، الإيجار لوحده يرجّعلك كل فلوسك في ${monthY(r.paybackM)} (${yrs(r.paybackM)}) — ده ${T('payback','استرداد الكاش')}.`)
                           : tx('Rent alone does not return your money within 30 years.','الإيجار لوحده مش بيرجّع فلوسك خلال 30 سنة.'));
+  items.push(isFinite(r.irr) ? tx(`Before inflation that is ${pct(r.irr)} a year (${T('irr','IRR')}), counting the date of every payment.`,`قبل التضخم ده ${pct(r.irr)} في السنة (${T('irr','IRR')})، بحساب ميعاد كل دفعة.`) : tx(`There is no positive yearly return (${T('irr','IRR')}) for a sale after ${H} years.`,`مفيش عائد سنوي موجب (${T('irr','IRR')}) لو بعت بعد ${H} سنين.`));
   items.push(tx(`Sell after ${H} years and every pound you paid comes back as ${fmt(r.multiple,2)} (${T('multiple','equity multiple')}).`,`لو بعت بعد ${H} سنين، كل جنيه دفعته بيرجعلك ${fmt(r.multiple,2)} (${T('multiple','مضاعف رأس المال')}).`));
-  $('#storyList').innerHTML = items.map((t,i)=>`<li><span class="n">${i+1}</span><span>${t}</span></li>`).join('');
+  $('#storyList').innerHTML = items.map((t,i)=>`<li${i>=3&&!S.moreS?' hidden':''}><span class="n">${i+1}</span><span>${t}</span></li>`).join('');
+  $('#storyMore').hidden = items.length<=3;
+  $('#storyMore').textContent = S.moreS ? tx('Show less','اعرض أقل') : tx(`Read the full story (${items.length} points)`,`اقرا القصة كاملة (${items.length} نقط)`);
   $('#cashNote').innerHTML = r.cashEstimated
     ? tx(`We estimated the ${T('cash','cash value')} at ${egp(r.cashValue)} (${pct(r.effDisc,0)} below the price). <button class="linkbtn" type="button" data-focus="u-a-cash">Enter the developer's real cash price</button> for a more accurate result.`,
          `قدّرنا ${T('cash','قيمة الكاش')} بـ${egp(r.cashValue)} (أقل من السعر بـ${pct(r.effDisc,0)}). <button class="linkbtn" type="button" data-focus="u-a-cash">دخّل سعر الكاش الحقيقي من المطوّر</button> عشان النتيجة تبقى أدق.`) : '';
 
-  setBar(`<span><span class="ml">${tx('After inflation','بعد التضخم')} · ${tx('vs certificate','قصاد الشهادة')} ${(gap>=0?'+':'')+fmt(gap,1)}</span><span class="mv num">${pct(r.real)}</span></span>
-          <span><span class="ml">${tx('Break-even if sold','التعادل لو بعت')}</span><span class="mv" style="font-size:15px">${r.saleBeM>0?monthY(r.saleBeM):'—'}</span></span><span class="mgo">${tx('Details ↑','التفاصيل ↑')}</span>`);
+  setBar(`<span class="mchip ${beats?'good':'warn'}">${beats?'✓':'!'}</span><span class="mv num">${okI?pct(r.real):'—'}</span><span class="ml">${tx('vs certificate','قصاد الشهادة')} ${pct(r.benchReal)}</span><span class="mgo">${tx('Details ↑','التفاصيل ↑')}</span>`);
 
   // milestones
   const ms=[];
@@ -312,7 +324,8 @@ function renderAnalyze(){
   const k=(key,val,meta,cls='',neg=false)=>`<div class="kpi ${cls}"${cls.includes('extra')&&!S.moreK?' hidden':''}><div class="lab">${T(key)}</div><div class="val num${neg?' neg':''}">${val}</div><div class="meta">${meta||''}</div></div>`;
   $('#kpis').innerHTML=[
     k('real',pct(r.real),tx(`certificate ${pct(r.benchReal)}`,`الشهادة ${pct(r.benchReal)}`),'hi',r.real<0),
-    k('irr',pct(r.irr),tx('per year, every payment dated','سنوياً، بمواعيد كل دفعة')),
+    k('beats',beats?tx('Yes','أيوه'):tx('No','لأ'),beats?tx(`by ${fmt(gap,1)} points`,`بفرق ${fmt(gap,1)} نقطة`):isFinite(gap)?tx(`short by ${fmt(-gap,1)} points`,`ناقص ${fmt(-gap,1)} نقطة`):'',beats?'':'',!beats),
+    k('irr',pct(r.irr),tx('per year before inflation','سنوياً قبل التضخم'),'extra'),
     k('nety',pct(r.netY),tx(`gross ${pct(r.gross)}`,`الإجمالي ${pct(r.gross)}`)),
     k('salebe',r.saleBeM>0?monthY(r.saleBeM):'—',r.saleBeM>0?yrs(r.saleBeM):''),
     k('usd',pct(r.usd),tx('per year in dollars','سنوياً بالدولار'),'extra',r.usd<0),
@@ -323,12 +336,12 @@ function renderAnalyze(){
     k('cap',pct(r.cap),tx('NOI ÷ resale value','صافي الدخل ÷ قيمة إعادة البيع'),'extra'),
     k('grm',fmt(r.grm,1)+'×',tx('years of rent = price','سنين إيجار = السعر'),'extra'),
     k('multiple',fmt(r.multiple,2)+'×',tx(`if sold after ${H} yrs`,`لو بعت بعد ${H} سنين`),'extra'),
-    k('grow',isFinite(r.beGrowth)?pct(r.beGrowth):'—',tx(`scenario assumes ${pct(E.SCN[S.scn].pg,0)}`,`السيناريو ${pct(E.SCN[S.scn].pg,0)}`),'extra'),
-    k('payback',r.paybackM>0?yrs(r.paybackM):'—',tx('rent only','من الإيجار بس'),'extra'),
-    k('score',r.score+' / 100',tx('return · rent · delivery · developer','عائد · إيجار · استلام · مطوّر'),'extra')
+    k('grow',isFinite(r.beGrowth)?pct(r.beGrowth):'—',tx(`scenario assumes ${pct(r.pg,0)}`,`السيناريو ${pct(r.pg,0)}`),'extra'),
+    k('payback',r.paybackM>0?yrs(r.paybackM):'—',tx('rent only','من الإيجار بس'),'extra')
   ].join('');
   $$('#kpis .kpi').forEach((el,i)=>{ if(i>=4){ el.classList.add('extra'); el.hidden=!S.moreK; } });
-  $('#moreKpis').textContent = S.moreK ? tx('Show fewer metrics','اعرض مؤشرات أقل') : tx('Show all 15 metrics','اعرض كل الـ15 مؤشر');
+  const nK=$$('#kpis .kpi').length;
+  $('#moreKpis').textContent = S.moreK ? tx('Show fewer metrics','اعرض مؤشرات أقل') : tx(`Show all ${nK} metrics`,`اعرض كل الـ${nK} مؤشر`);
 
   // position chart
   const ys=[0,...r.years.map(y=>y.y)], cumV=ys.map(y=>r.cum[12*y]), posV=ys.map(y=>r.cum[12*y]+r.saleNet(12*y));
@@ -340,9 +353,9 @@ function renderAnalyze(){
   // schedule
   const lbl=p=>({dp:tx('Down payment','المقدم'),dp2:tx('2nd down payment','مقدم تاني'),del:tx('Delivery payment','دفعة الاستلام'),bal:tx('Balance (cash)','الباقي كاش'),maint:tx('Maintenance deposit','وديعة الصيانة'),inst:tx(`Installment ${p.i}`,`قسط ${p.i}`)})[p.k];
   let tot=0;
-  $('#schedTable').innerHTML=`<thead><tr><th>#</th><th>${tx('Item','البند')}</th><th>%</th><th>${tx('Amount','المبلغ')}</th><th>${tx('Due','الاستحقاق')}</th></tr></thead><tbody>${
-    r.plan.map((p,i)=>{ if(p.k!=='maint') tot+=p.amt; return `<tr><td class="v">${i+1}</td><td>${lbl(p)}</td><td class="v">${pct(p.amt/r.net,2)}</td><td class="v"><span class="num">${fmt(Math.round(p.amt))}</span></td><td class="v">${dateAt(p.m)}</td></tr>`; }).join('')
-  }<tr class="total"><td></td><td>${tx('Unit price','سعر الوحدة')}</td><td class="v">100%</td><td class="v"><span class="num">${fmt(Math.round(tot))}</span></td><td></td></tr></tbody>`;
+  $('#schedTable').innerHTML=`<thead><tr><th>#</th><th>${tx('Item','البند')}</th><th class="pc">%</th><th>${tx('Amount','المبلغ')}</th><th>${tx('Due','الاستحقاق')}</th></tr></thead><tbody>${
+    r.plan.map((p,i)=>{ if(p.k!=='maint') tot+=p.amt; return `<tr><td class="v">${i+1}</td><td>${lbl(p)}</td><td class="v pc">${pct(p.amt/r.net,2)}</td><td class="v"><span class="num">${fmt(Math.round(p.amt))}</span></td><td class="v">${dateAt(p.m)}</td></tr>`; }).join('')
+  }<tr class="total"><td></td><td>${tx('Unit price','سعر الوحدة')}</td><td class="v pc">100%</td><td class="v"><span class="num">${fmt(Math.round(tot))}</span></td><td></td></tr></tbody>`;
 
   // break-even
   const wh=m=>m<0?tx('Not within 30 years','مش خلال 30 سنة'):`${monthY(m)} · ${yrs(m)}`;
@@ -366,11 +379,20 @@ function renderAnalyze(){
   $('#chartCur').textContent=`${tx('Value in','القيمة')} ${un} ${S.cur==='USD'?tx('USD','دولار'):tx('EGP','جنيه')}`;
   $('#altNote').textContent=tx(`Each line starts with 1M paid in cash. The unit starts below 1M because resale value is ${pct(r.resaleDisc,0)} under the developer price and the cost includes maintenance and finishing; rent counts only after delivery.`,`كل خط بيبدأ بمليون مدفوع كاش. الوحدة بتبدأ أقل من مليون لأن قيمة إعادة البيع أقل من سعر المطوّر بـ${pct(r.resaleDisc,0)}، والتكلفة فيها الصيانة والتشطيب، والإيجار بيتحسب بعد الاستلام بس.`);
 
-  // comparables
-  const z=zoneOf(u.zone);
-  $('#compHint').textContent=`${zoneName(u.zone)} · ${tx('fitted median','وسيط كامل التشطيب')} ${fmt(z.rent.full)} ${tx('EGP/m²/mo','ج/م²/شهر')} · ${tx('used','المستخدم')} ${fmt(r.rentM2)}`;
-  $('#compTable').innerHTML=`<thead><tr><th>${tx('Finishing','التشطيب')}</th><th>${tx('Area','المساحة')}</th><th>${tx('Monthly rent','الإيجار الشهري')}</th><th>${tx('Per m²','للمتر')}</th><th>${tx('Source','المصدر')}</th><th>${tx('Listed','من')}</th></tr></thead><tbody>${
-    LISTINGS.filter(l=>l[0]===u.zone).map(l=>`<tr><td>${FIN[l[1]][S.lang]}</td><td class="v"><span class="num">${l[2]} ${tx('m²','م²')}</span></td><td class="v"><span class="num">${full(l[3])}</span></td><td class="v"><span class="num">${fmt(l[3]/l[2])}</span></td><td>${l[4]}</td><td>${l[5]} ${tx('days','يوم')}</td></tr>`).join('')}</tbody>`;
+  // rent evidence
+  const fl=f=>FIN[f][S.lang], gr=r.grade;
+  $('#rentHint').textContent = r.rentQuoted ? tx('Using your rent quote','بنستخدم عرض الإيجار بتاعك') : `${gradeName(u.grade)} · ${fl(r.rentFinish)}`;
+  const rrow=(l,v,src,cls='')=>`<tr class="${cls}"><td>${l}</td><td class="v"><span class="num">${v}</span></td><td>${src}</td></tr>`;
+  const KF=`<a href="https://enterpriseam.com/egypt/2026/07/08/cairo-office-rents-jump-20-as-demand-outpaces-supply-of-grade-a-space/" target="_blank" rel="noopener">Knight Frank Q2 2026</a>`;
+  $('#rentTable').innerHTML=`<thead><tr><th>${tx('Step','الخطوة')}</th><th>${tx('EGP/m²/month','ج/م²/شهر')}</th><th>${tx('Source','المصدر')}</th></tr></thead><tbody>${
+    r.rentQuoted ? rrow(tx('Your rent quote','عرض الإيجار بتاعك'),fmt(u.rent),tx('Entered by you','إنت دخّلته'))+(S.scn!=='base'?rrow(tx('Scenario adjustment','تعديل السيناريو'),'× '+fmt(E.SCN[S.scn].rf,2),tx('Assumption','افتراض')):'')
+    : rrow(tx(`Fitted ${gradeName(u.grade)}`,`${gradeName(u.grade)} كامل التشطيب`),fmt(gr.full),`${KF} · $${gr.usdYr}/m²/${tx('yr','سنة')} × ${E.FX_REF}`)
+      + (r.rentFinish!=='full'?rrow(tx(`${fl(r.rentFinish)} share`,`نسبة ${fl(r.rentFinish)}`),'× '+fmt(E.FIN_SHARE[r.rentFinish]*100,0)+'%',tx('Assumption','افتراض')):'')
+      + rrow(tx('Negotiation discount','خصم التفاوض'),'− '+fmt(A.negot,0)+'%',tx('Asking vs signed rent','المطلوب قصاد اللي بيتمضي'))
+      + (S.scn!=='base'?rrow(tx('Scenario adjustment','تعديل السيناريو'),'× '+fmt(E.SCN[S.scn].rf,2),tx('Assumption','افتراض')):'')
+  }${rrow(tx('Rent used','الإيجار المستخدم'),fmt(r.rentM2),tx(`× ${u.area} m² = ${egp(r.rentMonth)} / month`,`× ${u.area} م² = ${egp(r.rentMonth)} في الشهر`),'total')}</tbody>`;
+  $('#rentNote').innerHTML = tx(`Knight Frank reports Grade A business parks at about $348/m²/year and Grade B at about $283.5. Single offices in strata buildings often rent below these averages. If a broker or a similar listing gives you a real number, <button class="linkbtn" type="button" data-focus="u-a-rent">enter your rent quote</button>.`,
+    `Knight Frank بيقول إن البيزنس بارك Grade A حوالي 348 دولار للمتر في السنة، وGrade B حوالي 283.5. المكاتب المفرّقة في المباني الإدارية غالباً بتتأجر أقل من المتوسطات دي. لو معاك رقم حقيقي من بروكر أو إعلان مشابه، <button class="linkbtn" type="button" data-focus="u-a-rent">دخّل عرض الإيجار</button>.`);
   renderSources();
   updateLinks();
 }
@@ -381,9 +403,11 @@ function unitLine(u){ return `${zoneName(u.zone)} · ${FIN[u.finish][S.lang]} ·
 function updateLinks(){
   const r=R.a, u=S.U.a; if(!r) return;
   const msg = tx(
-    `Hi Hesham, I analyzed a unit on AqarMath and would like a free review.\n• ${unitLine(u)}\n• Real return ${pct(r.real)} vs certificate ${pct(r.benchReal)}\n${shareLink()}`,
-    `أهلاً أستاذ هشام، حلّلت وحدة على AqarMath وعايز مراجعة مجانية.\n• ${unitLine(u)}\n• العائد بعد التضخم ${pct(r.real)} قصاد الشهادة ${pct(r.benchReal)}\n${shareLink()}`);
+    `Hi Hesham, I analyzed a unit on AqarMath and would like a free consultation.\n• ${unitLine(u)}\n• After inflation ${pct(r.real)} vs certificate ${pct(r.benchReal)}\n${shareLink()}`,
+    `أهلاً أستاذ هشام، حلّلت وحدة على AqarMath وعايز استشارة مجانية.\n• ${unitLine(u)}\n• العائد بعد التضخم ${pct(r.real)} قصاد الشهادة ${pct(r.benchReal)}\n${shareLink()}`);
   $('#waBtn').href = `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+  $('#waBtn').setAttribute('aria-disabled', String(!S.consent)); $('#waBtn').classList.toggle('off', !S.consent);
+  $('#consent').checked = !!S.consent;
 }
 function preparePrint(){
   const u=S.U.a;
@@ -406,13 +430,15 @@ const SRC=()=>[
   ['off',tx('Property tax','الضريبة العقارية'),tx('10% after 32% deduction','10% بعد خصم 32%'),tx('Law 196/2008','قانون 196/2008'),'Andersen Egypt','https://eg.andersen.com/property-tax/'],
   ['off',tx('Sale tax 2.5% (draft)','ضريبة البيع 2.5% (مشروع)'),S.A.dispTax?tx('applied','محسوبة'):tx('not applied','مش محسوبة'),'09/06/2026','Egypt Telegraph','https://www.egypttelegraph.com/article/251412/ضريبة-2-5-على-بيع-العقارات-من'],
   ['mkt',tx('Developer transfer fees','رسوم التنازل'),`${S.A.transfer}% (${tx('range 1–5%','المدى 1–5%')})`,'19/09/2026','Masrawy','https://www.masrawy.com/news/realestate-news/details/2026/9/19/3050259'],
-  ['mkt',tx('New Cairo office rent levels','مستوى إيجارات المكاتب في التجمع'),tx('Grade A ≈ $348/m²/yr','Grade A ≈ 348$/م²/سنة'),'08/07/2026','Knight Frank via EnterpriseAM','https://enterpriseam.com/egypt/2026/07/08/cairo-office-rents-jump-20-as-demand-outpaces-supply-of-grade-a-space/'],
+  ['mkt',tx('Office rent by building grade','إيجار المكاتب حسب نوع المبنى'),tx(`A $348 · B $283.5 /m²/yr → ${fmt(E.GRADES.A.full)} · ${fmt(E.GRADES.B.full)} EGP/m²/mo`,`A ‏348$ · B ‏283.5$ للمتر/سنة → ${fmt(E.GRADES.A.full)} · ${fmt(E.GRADES.B.full)} ج/م²/شهر`),'08/07/2026','Knight Frank via EnterpriseAM','https://enterpriseam.com/egypt/2026/07/08/cairo-office-rents-jump-20-as-demand-outpaces-supply-of-grade-a-space/'],
   ['mkt',tx('Rent growth','زيادة الإيجار'),`${S.A.rentG}% / ${tx('yr','سنة')}`,'13/05/2026','JLL via EnterpriseAM','https://enterpriseam.com/egypt/hardhats/cairos-rental-market-running-double-digit-increase-while-sales-stall/'],
   ['mkt',tx('Sale / leasing commission','عمولة البيع / التأجير'),tx(`${S.A.saleFee}% · 1 month`,`${S.A.saleFee}% · إيجار شهر`),'—','Aqarmap','https://aqarmap.com.eg/ar/advice/?p=25458'],
-  ['mkt',tx('Rent per m² by zone','إيجار المتر حسب المنطقة'),tx('Listing median − negotiation','وسيط الإعلانات − التفاوض'),tx('Sample now; daily later','تجريبي دلوقتي؛ يومي بعدين'),'Property Finder · Aqarmap · Bayut',''],
+  ['asm',tx('Semi-finished / core & shell rent','إيجار النص تشطيب / الـCore'),'70% · 50%','—',tx('Assumption, share of fitted rent','افتراض، نسبة من الإيجار الكامل'),''],
+  ['asm',tx('Finishing cost and lease-up','تكلفة التشطيب ومدة التأجير'),tx(`semi ${fmt(E.FIN_COST.semi)} · core ${fmt(E.FIN_COST.core)} EGP/m² · ${E.LEASE_UP.full}–${E.LEASE_UP.core} months`,`نص ${fmt(E.FIN_COST.semi)} · Core ${fmt(E.FIN_COST.core)} ج/م² · ${E.LEASE_UP.full}–${E.LEASE_UP.core} شهور`),'—',tx('Assumption','افتراض'),''],
+  ['asm',tx('Cash discount cap','حد خصم الكاش'),'30%','—',tx('Assumption, when no cash price is entered','افتراض، لو مفيش سعر كاش'),''],
   ['ctr',tx('Cash price, maintenance and plan terms','سعر الكاش والصيانة وشروط الخطة'),tx('Per unit','حسب الوحدة'),'—',tx('Developer offer / contract','عرض المطوّر / العقد'),''],
-  ['asm',tx('Price growth scenarios','سيناريوهات نمو السعر'),'4% · 10% · 16%','—',tx('Assumption (JLL resale +3.1% y/y)','افتراض (JLL إعادة البيع +3.1%)'),''],
-  ['asm',tx('Resale discount, vacancy, owner costs, rent negotiation','فرق إعادة البيع والشغور والمصاريف والتفاوض'),`${S.A.resaleDisc}% · ${S.A.vac}% · ${S.A.svc}% · ${S.A.negot}%`,'—',tx('Assumption, to be set by an investment expert','افتراض، يحدده خبير استثمار'),''],
+  ['asm',tx('Price growth scenarios','سيناريوهات نمو السعر'),`${S.A.pg+E.SCN.low.pg}% · ${S.A.pg}% · ${S.A.pg+E.SCN.high.pg}%`,'—',tx('Assumption: base near inflation; cautious also delays delivery 12 months','افتراض: الواقعي قريب من التضخم؛ المتشائم كمان بيأخر الاستلام سنة'),''],
+  ['asm',tx('Resale discount, vacancy, owner costs, rent negotiation','فرق إعادة البيع والشغور والمصاريف والتفاوض'),`${S.A.resaleDisc}% · ${S.A.vac}% · ${S.A.svc}% · ${S.A.negot}%`,'—',tx('Assumption; vacancy for strata offices 15–20%','افتراض؛ الشغور للمكاتب المفرّقة 15–20%'),''],
   ['asm',tx('Gold, EGX30, EGP decline','الدهب وEGX30 وتراجع الجنيه'),`${S.A.gold}% · ${S.A.egx}% · ${S.A.dep}%`,'—',tx('Assumption','افتراض'),'']
 ];
 function renderSources(){
@@ -421,23 +447,30 @@ function renderSources(){
     SRC().map(([t,n,v,d,s,u])=>`<tr><td>${n}</td><td class="v"><span class="num">${v}</span></td><td><span class="pill ${t}">${typ[t]}</span></td><td class="v">${d}</td><td>${u?`<a href="${u}" target="_blank" rel="noopener">${s}</a>`:s}</td></tr>`).join('')}</tbody>`;
 }
 function renderMethod(){
-  const order=['real','irr','bench','cash','pv','noi','gross','nety','cap','grm','salebe','payback','coverage','roi','multiple','npv','usd','grow','score'];
+  const order=['real','beats','irr','bench','rent','cash','pv','noi','gross','nety','cap','grm','salebe','payback','coverage','roi','multiple','npv','usd','grow'];
   $('#methodBody').innerHTML = `
   <div class="panel"><div class="ph"><h2>${tx('The order of the calculation','ترتيب الحسبة')}</h2></div><ul>
     <li>${tx('Your payment plan becomes a month-by-month cash flow: down payment, installments, delivery payment, maintenance deposit and finishing.','خطة السداد بتتحول لتدفق نقدي شهر بشهر: المقدم والأقساط ودفعة الاستلام ووديعة الصيانة والتشطيب.')}</li>
-    <li>${tx('Rent starts after delivery plus the months needed to finish and find a tenant, at the zone median for comparable units, minus a negotiation discount, then grows each year.','الإيجار بيبدأ بعد الاستلام + الشهور اللازمة للتشطيب وإيجاد مستأجر، بوسيط المنطقة لوحدات مماثلة ناقص نسبة تفاوض، وبعدين بيزيد كل سنة.')}</li>
-    <li>${tx('Resale value starts from the cash value of the unit, below the developer price for developer purchases, and grows by the scenario rate.','قيمة إعادة البيع بتبدأ من قيمة الكاش للوحدة، وأقل من سعر المطوّر لو الشرا من المطوّر، وبتزيد بنسبة السيناريو.')}</li>
-    <li>${tx('A sale pays commission, a developer transfer fee if before delivery or the last installment, optionally the draft 2.5% sale tax, and the remaining installments.','البيع عليه عمولة، ورسوم تنازل للمطوّر لو قبل الاستلام أو آخر قسط، واختيارياً ضريبة البيع 2.5% المقترحة، والأقساط الباقية.')}</li>
+    <li>${tx('Rent starts after delivery plus the months needed to finish and find a tenant. It comes from Knight Frank\'s published rent for the building grade, adjusted for finishing and a negotiation discount, or from your own quote, then grows each year.','الإيجار بيبدأ بعد الاستلام + الشهور اللازمة للتشطيب وإيجاد مستأجر. بييجي من إيجار Knight Frank المنشور لنوع المبنى، متعدّل حسب التشطيب وخصم التفاوض، أو من عرض الإيجار بتاعك، وبعدين بيزيد كل سنة.')}</li>
+    <li>${tx('Resale value starts from the cash value of the unit (estimated with a 30% cap if you do not enter it), below the developer price for developer purchases, and grows by the scenario rate.','قيمة إعادة البيع بتبدأ من قيمة الكاش للوحدة (متقدرة بحد أقصى 30% خصم لو مدخلتهاش)، وأقل من سعر المطوّر لو الشرا من المطوّر، وبتزيد بنسبة السيناريو.')}</li>
+    <li>${tx('A sale pays commission, a developer transfer fee if before delivery or the last installment, optionally the draft 2.5% sale tax, and the remaining installments at their present value (the buyer takes them over).','البيع عليه عمولة، ورسوم تنازل للمطوّر لو قبل الاستلام أو آخر قسط، واختيارياً ضريبة البيع 2.5% المقترحة، والأقساط الباقية بقيمتها الحالية (المشتري بياخدها).')}</li>
     <li>${tx('Everything is compared with the National Bank of Egypt certificate that matches your holding period, after inflation.','كل ده بيتقارن بشهادة البنك الأهلي المناسبة لمدة احتفاظك، بعد التضخم.')}</li>
   </ul></div>
   <div class="panel"><div class="ph"><h2>${tx('Every metric','كل المؤشرات')}</h2></div><dl>${order.map(k=>{ const g=GL[k][S.lang]; return `<dt>${g[0]}</dt><dd>${g[1]}${g[2]?`<code>${g[2]}</code>`:''}</dd>`; }).join('')}</dl></div>
   <div class="panel"><div class="ph"><h2>${tx('What we do not know yet','اللي لسه مش عارفينه')}</h2></div><ul>
-    <li>${tx('Listings are sample data calibrated to published market levels. Real New Cairo listings come next.','الإعلانات بيانات تجريبية متظبطة على أرقام السوق المنشورة. الإعلانات الحقيقية للتجمع جاية.')}</li>
+    <li>${tx('Rents are market averages by building grade, not prices for a specific building. A real quote from a broker is better.','الإيجارات متوسطات سوق حسب نوع المبنى، مش أسعار مبنى معيّن. عرض حقيقي من بروكر أحسن.')}</li>
     <li>${tx('Asking rents are higher than signed rents; the negotiation discount is an estimate.','الإيجار المطلوب أعلى من الإيجار اللي بيتمضي؛ نسبة التفاوض تقدير.')}</li>
     <li>${tx('Resale discount, vacancy and price growth vary by building; treat them as editable assumptions.','فرق إعادة البيع والشغور ونمو السعر بيختلفوا من مبنى للتاني؛ اعتبرهم افتراضات تقدر تعدّلها.')}</li>
     <li>${tx('Income tax on rent is not included yet.','ضريبة الدخل على الإيجار لسه مش محسوبة.')}</li>
   </ul></div>
-  <div class="panel"><div class="ph"><h2>${tx('Disclosure','الإفصاح')}</h2></div><p style="margin:0;color:var(--ink2)">${tx('AqarMath was founded by Hesham Rodiny, who works in real estate sales. The calculations use the same formulas for every unit. No developer pays to appear, and any commercial link is stated next to the unit. Nothing here is investment advice.','AqarMath أسسها هشام روديني، وهو شغال في مبيعات العقارات. الحسابات بنفس المعادلات لكل وحدة. محدش من المطورين بيدفع عشان يظهر، وأي علاقة تجارية بتتكتب جنب الوحدة. مفيش حاجة هنا نصيحة استثمارية.')}</p></div>
+  <div class="panel" id="disclosure"><div class="ph"><h2>${tx('Disclosure','الإفصاح')}</h2></div><p style="margin:0;color:var(--ink2)">${tx('AqarMath was founded by Hesham Rodiny, who works in real estate sales and may discuss units he earns a commission on. The calculations use the same formulas for every unit, whoever sells it. No developer pays to appear or to change a result, and the site does not list units for sale. Nothing here is investment advice.','AqarMath أسسها هشام روديني، وهو شغال في مبيعات العقارات وممكن يكلمك عن وحدات بياخد عليها عمولة. الحسابات بنفس المعادلات لكل وحدة مهما كان مين بيبيعها. محدش من المطورين بيدفع عشان يظهر أو عشان نتيجة تتغير، والموقع مش بيعرض وحدات للبيع. مفيش حاجة هنا نصيحة استثمارية.')}</p></div>
+  <div class="panel" id="privacy"><div class="ph"><h2>${tx('Privacy','الخصوصية')}</h2></div><ul>
+    <li>${tx('No sign-up. What you type stays in your browser on this device and is not sent to us.','مفيش تسجيل. اللي بتكتبه بيفضل في المتصفح على جهازك ومش بيتبعتلنا.')}</li>
+    <li>${tx('WhatsApp opens only after you tick the consent box, and sends only the message you see before pressing send.','واتساب مش بيفتح غير بعد ما تعلّم على الموافقة، وبيبعت الرسالة اللي إنت شايفها بس قبل ما تدوس إرسال.')}</li>
+    <li>${tx('We count anonymous page visits (Vercel Web Analytics) with no cookies and no personal data.','بنعدّ زيارات الصفحات من غير هوية (Vercel Web Analytics) من غير كوكيز ولا بيانات شخصية.')}</li>
+    <li>${tx('To delete: use “Clear my data on this device” on the Analyze page, and reply “delete” on WhatsApp to remove the chat.','للمسح: استخدم «امسح بياناتي من الجهاز» في صفحة التحليل، وابعت «امسح» على واتساب عشان نمسح المحادثة.')}</li>
+  </ul></div>
+  <div class="panel"><div class="ph"><h2>${tx('Limitation','حدود المسؤولية')}</h2></div><p style="margin:0;color:var(--ink2)">${tx('Results are estimates from published averages and your inputs. Real rents, prices, fees and delivery dates differ by building and contract. Check the contract and get independent advice before you pay. AqarMath and Hesham Rodiny are not liable for decisions made from these estimates.','النتايج تقديرات من متوسطات منشورة والأرقام اللي دخّلتها. الإيجار والسعر والرسوم ومواعيد الاستلام الحقيقية بتختلف من مبنى لمبنى ومن عقد لعقد. راجع العقد وخد رأي مستقل قبل ما تدفع. AqarMath وهشام روديني مش مسؤولين عن قرارات مبنية على التقديرات دي.')}</p></div>
   <div class="panel"><div class="ph"><h2>${tx('Sources','المصادر')}</h2></div><div class="scroll"><table class="t" id="srcTable2"></table></div></div>`;
   renderSources(); $('#srcTable2').innerHTML = $('#srcTable').innerHTML;
 }
@@ -447,12 +480,13 @@ function buildUnitB(){
   const card=k=>{ const u=S.U[k], p=id=>`u-${k}-${id}`;
     if (k==='a') return `<div class="panel unit"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="dot"></span><h2>${unitName('a')}</h2></div><p class="hint" style="margin:0 0 8px;color:var(--muted);font-size:13px">${unitLine(u)}</p><button class="linkbtn" type="button" data-tab="analyze">${tx('Edit on Analyze','عدّلها في صفحة التحليل')}</button></div>`;
     return `<div class="panel unit b"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="dot b"></span><h2>${unitName('b')}</h2></div><div class="fg">
-      ${fld(p('zone'),tx('Zone','المنطقة'),sel(p('zone'),ZO(),u.zone))}${fld(p('finish'),tx('Finishing','التشطيب'),sel(p('finish'),FO(),u.finish))}
+      ${fld(p('zone'),tx('Zone','المنطقة'),sel(p('zone'),ZO(),u.zone))}${fld(p('grade'),tx('Building','المبنى'),sel(p('grade'),GO(),u.grade))}${fld(p('finish'),tx('Finishing','التشطيب'),sel(p('finish'),FO(),u.finish))}
       ${fld(p('area'),tx('Area (m²)','المساحة (م²)'),num(p('area'),u.area,1,10))}${fld(p('delm'),tx('Delivery','الاستلام'),sel(p('delm'),DO(),u.delm))}
       ${fld(p('price'),tx('Unit price (EGP)','سعر الوحدة (جنيه)'),mon(p('price'),u.price),'',true)}
       ${fld(p('down'),tx('Down payment %','المقدم %'),num(p('down'),u.down,1,0,100))}${fld(p('years'),tx('Installment years','سنين التقسيط'),num(p('years'),u.years,1,0,15))}
       ${fld(p('cash'),tx('Cash price (optional)','سعر الكاش (اختياري)'),mon(p('cash'),u.cash,tx('Estimate','تقدير')),'',true)}
-      ${fld(p('source'),tx('Buying from','الشرا من'),sel(p('source'),SO(),u.source))}${fld(p('maint'),tx('Maintenance %','الصيانة %'),num(p('maint'),u.maint,0.5,0,20))}</div></div>`; };
+      ${fld(p('source'),tx('Buying from','الشرا من'),sel(p('source'),SO(),u.source))}${fld(p('maint'),tx('Maintenance %','الصيانة %'),num(p('maint'),u.maint,0.5,0,20))}
+      ${fld(p('rent'),tx('Rent quote (EGP/m²/mo)','عرض إيجار (ج/م²/شهر)'),num(p('rent'),u.rent||'',10,0,20000),'',true)}</div></div>`; };
   $('#unitCards').innerHTML = card('a') + card('b');
 }
 function renderCompare(){
@@ -462,9 +496,9 @@ function renderCompare(){
   $$('[data-name="a"]').forEach(e=>e.textContent=unitName('a')); $$('[data-name="b"]').forEach(e=>e.textContent=unitName('b'));
   if (Object.keys(ea).length || Object.keys(eb).length){ $('#vTitle').textContent=tx('Check the highlighted fields to compare.','راجع الخانات المعلّمة عشان نقارن.'); $('#vText').textContent=''; return; }
   const ra=R.a, rb=R.b, H=S.hold;
-  const aw=ra.real>=rb.real, W=aw?ra:rb, L=aw?rb:ra, wn=unitName(aw?'a':'b');
+  const aw=(isFinite(ra.real)?ra.real:-9)>=(isFinite(rb.real)?rb.real:-9), W=aw?ra:rb, L=aw?rb:ra, wn=unitName(aw?'a':'b');
   $('#vBar').style.background=aw?'var(--s1)':'var(--s2)';
-  $('#vTitle').textContent=tx(`${wn} earns more: ${pct(W.real)} a year after inflation, against ${pct(L.real)}.`,`${wn} بتكسب أكتر: ${pct(W.real)} سنوياً بعد التضخم، مقابل ${pct(L.real)}.`);
+  $('#vTitle').textContent=!isFinite(W.real)?tx('Neither unit gets your money back if sold in this period.','ولا وحدة بترجّع فلوسك لو اتباعت في المدة دي.'):tx(`${wn} earns more: ${pct(W.real)} a year after inflation, against ${pct(L.real)}.`,`${wn} بتكسب أكتر: ${pct(W.real)} سنوياً بعد التضخم، مقابل ${pct(L.real)}.`);
   $('#vText').textContent=tx(`Bank certificate after inflation: ${pct(ra.benchReal)}. Holding period ${H} years.`,`الشهادة البنكية بعد التضخم: ${pct(ra.benchReal)}. مدة الاحتفاظ ${H} سنين.`);
   const dt=m=>m<0?'—':yrs(m);
   const rows=[
@@ -473,7 +507,7 @@ function renderCompare(){
     [T('nety'),pct(ra.netY),pct(rb.netY),ra.netY,rb.netY,'high'],[T('cash'),money(ra.cashValue),money(rb.cashValue),ra.cashValue/ra.net,rb.cashValue/rb.net,'low'],
     [tx('Price per m²','سعر المتر'),money(ra.ppm),money(rb.ppm),ra.ppm,rb.ppm,'low'],[tx('Monthly rent','الإيجار الشهري'),money(ra.rentMonth),money(rb.rentMonth),ra.rentMonth,rb.rentMonth,'high'],
     [T('usd'),pct(ra.usd),pct(rb.usd),ra.usd,rb.usd,'high'],[T('npv'),money(ra.npv),money(rb.npv),ra.npv,rb.npv,'high'],
-    [T('payback'),dt(ra.paybackM),dt(rb.paybackM),ra.paybackM<0?1e9:ra.paybackM,rb.paybackM<0?1e9:rb.paybackM,'low'],[T('score'),ra.score+' / 100',rb.score+' / 100',ra.score,rb.score,'high']];
+    [T('payback'),dt(ra.paybackM),dt(rb.paybackM),ra.paybackM<0?1e9:ra.paybackM,rb.paybackM<0?1e9:rb.paybackM,'low'],[T('beats'),ra.beats?tx('Yes','أيوه'):tx('No','لأ'),rb.beats?tx('Yes','أيوه'):tx('No','لأ'),+ra.beats,+rb.beats,'high']];
   $('#cmpBody').innerHTML=rows.map(([k,va,vb,na,nb,dir])=>{ const ok=isFinite(na)&&isFinite(nb)&&Math.abs(na-nb)>1e-9, a2=ok&&(dir==='high'?na>nb:na<nb), b2=ok&&!a2;
     return `<tr><td class="k">${k}</td><td class="v ${a2?'win':''}"><span class="num">${va}</span></td><td class="v ${b2?'win':''}"><span class="num">${vb}</span></td></tr>`; }).join('');
   const Y=Math.max(ra.years.length,rb.years.length), ys=[...Array(Y+1).keys()], fm=v=>(v<0?'−':'')+egp(Math.abs(v));
@@ -482,7 +516,7 @@ function renderCompare(){
   $('#cmpLegend').innerHTML=ser.map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('')+`<span style="color:var(--muted)">${tx('EGP','جنيه')} ${cu}</span>`;
 }
 
-/* ================= market / news / opps ================= */
+/* ================= market / news ================= */
 function renderMarket(){
   const t=(l,v,m)=>`<div class="tile"><div class="lab">${l}</div><div class="val num">${v}</div><div class="meta">${m}</div></div>`;
   $('#tiles').innerHTML=[t(tx('NBE 5-year certificate','شهادة الأهلي الخمسية'),'14.25%',tx('paid monthly · 23 Oct 2026','عائد شهري · 23 أكتوبر 2026')),
@@ -492,14 +526,14 @@ function renderMarket(){
     t(tx('Cairo office rents','إيجارات المكاتب'),'+20%',tx('y/y in EGP · Knight Frank','سنوياً بالجنيه · Knight Frank'))].join('');
   const mx=DEVS[0][2];
   $('#devTable').innerHTML=`<thead><tr><th>#</th><th>${tx('Developer','المطوّر')}</th><th>${tx('Sales','المبيعات')}</th></tr></thead><tbody>${DEVS.map((d,i)=>`<tr><td class="v">${i+1}</td><td>${ar()?d[1]:d[0]}</td><td><div class="barcell"><i style="width:${Math.round(d[2]/mx*110)}px"></i><span class="num">${fmt(d[2],1)}</span></div></td></tr>`).join('')}</tbody>`;
-  const box=$('#zoneChart'), W=box.clientWidth||500, rows=E.ZONES.map(z=>[zoneName(z.id),z.rent.full]), max=Math.max(...rows.map(r=>r[1])), labW=130, valW=56, bh=22, gap=18, rtl=ar();
+  const box=$('#zoneChart'), W=box.clientWidth||500, rows=Object.keys(E.GRADES).flatMap(g=>['full','semi'].map(f=>[`${g} · ${FIN[f][S.lang]}`,E.GRADES[g].full*E.FIN_SHARE[f]])), max=Math.max(...rows.map(r=>r[1])), labW=130, valW=56, bh=22, gap=18, rtl=ar();
   const Hh=4+rows.length*(bh+gap), bw=v=>(W-labW-valW)*v/max; let svg=`<svg xmlns="${NS}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true">`;
   rows.forEach(([nm,v],i)=>{ const y=4+i*(bh+gap), w=bw(v);
     svg+= rtl ? `<text x="${W}" y="${y+bh/2+4}" text-anchor="end" style="fill:var(--ink);font-size:13px">${nm}</text><rect x="${W-labW-w}" y="${y}" width="${w}" height="${bh}" rx="4" fill="var(--accent)"/><text x="${W-labW-w-8}" y="${y+bh/2+4}" text-anchor="end" style="fill:var(--ink);font-weight:600">${fmt(v)}</text>`
               : `<text x="0" y="${y+bh/2+4}" style="fill:var(--ink);font-size:13px">${nm}</text><rect x="${labW}" y="${y}" width="${w}" height="${bh}" rx="4" fill="var(--accent)"/><text x="${labW+w+8}" y="${y+bh/2+4}" style="fill:var(--ink);font-weight:600">${fmt(v)}</text>`; });
   box.style.height=Hh+'px'; box.innerHTML=svg+'</svg>';
-  const inf=S.A.inf/100, y=E.ZONES[0].rent.full*12*(1-S.A.negot/100)/182000*(1-S.A.vac/100-S.A.svc/100-0.068);
-  const rr=[[tx('NBE 5-year certificate (15.2% a year reinvested)','شهادة الأهلي الخمسية (15.2% سنوياً بإعادة الاستثمار)'),(1+E.NBE5_EFF)/(1+inf)-1],[tx('Office net rent yield (Knight Frank sale price)','العائد الإيجاري الصافي لمكتب (سعر Knight Frank)'),(1+y)/(1+inf)-1],[tx('Office total (rent + base price growth)','مكتب: إيجار + نمو السعر الواقعي'),(1+y+E.SCN.base.pg)/(1+inf)-1]];
+  const inf=S.A.inf/100, y=E.GRADES.B.full*12*(1-S.A.negot/100)/182000*(1-S.A.vac/100-S.A.svc/100-0.068);
+  const rr=[[tx('NBE 5-year certificate (15.2% a year reinvested)','شهادة الأهلي الخمسية (15.2% سنوياً بإعادة الاستثمار)'),(1+E.NBE5_EFF)/(1+inf)-1],[tx('Grade B office net rent yield (Knight Frank sale price)','العائد الإيجاري الصافي لمكتب Grade B (سعر Knight Frank)'),(1+y)/(1+inf)-1],[tx('Office total (rent + base price growth)','مكتب: إيجار + نمو السعر الواقعي'),(1+y+S.A.pg/100)/(1+inf)-1]];
   $('#realTable').innerHTML=`<tbody>${rr.map(([l,v])=>`<tr><td>${l}</td><td class="v ${v<0?'neg':''}"><span class="num">${pct(v)}</span></td></tr>`).join('')}</tbody>`;
 }
 function renderNews(){
@@ -510,15 +544,6 @@ function renderNews(){
     <div><h2>${t[0]}</h2><p>${t[1]}</p><div class="why"><b>${tx('What it means for you: ','يعني إيه بالنسبة لك: ')}</b>${t[2]}</div>
     <div class="src">${tx('Source:','المصدر:')} <a href="${n.url}" target="_blank" rel="noopener">${n.src}</a></div></div></article>`; }).join('');
 }
-function oppUnit(o){ return {...BASE,name:ar()?`${o.ar} — ${zoneName(o.zone)}`:`${o.en}, ${zoneName(o.zone)}`,zone:o.zone,finish:o.finish,area:o.area,price:o.price,down:o.down,years:o.years,delm:o.delm,maint:o.maint,dev:o.dev,source:o.source}; }
-function renderOpps(){
-  $('#oppList').innerHTML=OPPS.map((o,i)=>{ const r=E.compute(oppUnit(o),S.A,{H:S.hold,scn:S.scn});
-    return `<article class="panel opp"><div class="opp-top"><div><h2>${ar()?o.ar:o.en}</h2><span style="font-size:12.5px;color:var(--muted)">${zoneName(o.zone)} · ${o.delm?tx('delivery in 1 year','استلام بعد سنة'):tx('ready now','استلام فوري')} · ${o.dev==='big'?tx('major developer','مطوّر كبير'):tx('mid-size developer','مطوّر متوسط')}</span></div>
-    <div class="score"><b class="num">${r.score}</b><span>${tx('Score','الدرجة')}</span></div></div>
-    <div class="facts"><div><small>${tx('Price','السعر')}</small><b>${money(o.price)}</b></div><div><small>${tx('After inflation','بعد التضخم')}</small><b>${pct(r.real)}</b></div><div><small>${tx('Net yield','العائد الصافي')}</small><b>${pct(r.netY)}</b></div></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-opp="${i}" data-slot="a">${tx('Analyze','حلّلها')}</button><button class="btn ghost" type="button" data-opp="${i}" data-slot="b">${tx('Compare as Unit B','قارنها كوحدة ب')}</button></div></article>`; }).join('');
-}
-
 /* ================= glossary popover ================= */
 const pop=$('#pop');
 function openTerm(btn){
@@ -551,7 +576,7 @@ function renderAll(){
   const ok = k => !Object.keys(E.validate(S.U[k])).length;
   if (ok('a')) R.a = E.compute(S.U.a, S.A, {H:S.hold, scn:S.scn});
   if (ok('b')) R.b = E.compute(S.U.b, S.A, {H:S.hold, scn:S.scn});
-  ({analyze:renderAnalyze, compare:renderCompare, market:renderMarket, news:renderNews, opps:renderOpps, method:renderMethod})[S.tab]();
+  ({analyze:renderAnalyze, compare:renderCompare, market:renderMarket, news:renderNews, method:renderMethod})[S.tab]();
   if (S.tab!=='analyze') setBar('');
   saveState();
 }
@@ -563,7 +588,7 @@ function showTab(id){
 }
 
 /* ================= events ================= */
-const NUMK=['area','price','down','years','disc','dp2','dp2m','freq','delm','delpay','maint','maintb','fin','lease','cash'];
+const NUMK=['area','price','down','years','disc','dp2','dp2m','freq','delm','delpay','maint','maintb','fin','lease','cash','rent'];
 const NULLABLE=['fin','lease'];
 document.addEventListener('input',e=>{
   const el=e.target, id=el.id||''; let m;
@@ -574,13 +599,14 @@ document.addEventListener('input',e=>{
   }
   if ((m=id.match(/^u-([ab])-(\w+)$/))){ const [,k,f]=m; let v=el.value;
     if (el.classList.contains('money')) v = digits(v) ? Math.round(+digits(v)) : 0;
-    else if (NUMK.includes(f)) v = v==='' ? (NULLABLE.includes(f) ? null : (f==='cash'?0:'')) : +v;
+    else if (NUMK.includes(f)) v = v==='' ? (NULLABLE.includes(f) ? null : ((f==='cash'||f==='rent')?0:'')) : +v;
     S.U[k][f]=v;
     if (f==='finish'){ S.U[k].fin=null; S.U[k].lease=null; }
     renderAll(); return; }
   if ((m=id.match(/^a-(\w+)$/))){ const f=m[1]; S.A[f] = (f==='tax'||f==='dispTax') ? el.value==='1' : f==='bench' ? el.value : (+el.value||0); renderAll(); return; }
   if (id==='hold'){ S.hold=+el.value; renderAll(); return; }
   if (id==='contract'){ if(el.value) S.contract=el.value; renderAll(); return; }
+  if (id==='consent'){ S.consent=el.checked; updateLinks(); saveState(); return; }
   if (id==='broker'){ S.broker=el.value.slice(0,60); saveState(); }
 });
 document.addEventListener('change',e=>{
@@ -593,6 +619,8 @@ document.addEventListener('toggle',e=>{ if(e.target.id==='moreGroup') moreOpen=e
 document.addEventListener('click',e=>{
   const term=e.target.closest('.term'); if(term){ e.preventDefault(); if(!pop.hidden&&pop.dataset.for===term.dataset.term){ pop.hidden=true; return; } pop.dataset.for=term.dataset.term; openTerm(term); return; }
   if(!e.target.closest('#pop')) pop.hidden=true;
+  if (e.target.closest('#vchip')){ $('#story').scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const wa=e.target.closest('#waBtn'); if (wa && !S.consent){ e.preventDefault(); toast(tx('Tick the consent box first','علّم على الموافقة الأول')); $('#consent').focus(); return; }
   if (e.target.closest('#mbar')){ $('#story').scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const b=e.target.closest('button'); if(!b) return;
   if (b.dataset.focus){ const d=$('#moreGroup'); if(d){ d.open=true; moreOpen=true; } const n=document.getElementById(b.dataset.focus); if(n){ n.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>n.focus(),300); } return; }
@@ -603,7 +631,8 @@ document.addEventListener('click',e=>{
   if (b.id==='moreKpis'){ S.moreK=!S.moreK; return renderAnalyze(); }
   if (b.id==='pdfBtn'){ preparePrint(); window.print(); return; }
   if (b.id==='shareBtn' || b.id==='shareCopy2'){ copyShare(); return; }
-  if (b.dataset.opp){ const o=OPPS[+b.dataset.opp], k=b.dataset.slot; S.U[k]=oppUnit(o); if(k==='a') buildInputs(); $('#unitCards').innerHTML=''; return showTab(k==='a'?'analyze':'compare'); }
+  if (b.id==='storyMore'){ S.moreS=!S.moreS; return renderAnalyze(); }
+  if (b.id==='clearData'){ try{ localStorage.removeItem('aqm:v3'); localStorage.removeItem('aqm:v2'); localStorage.removeItem('lang'); }catch(_){} S.consent=false; S.broker=''; toast(tx('Cleared from this device','اتمسحت من الجهاز')); setTimeout(()=>location.replace(location.pathname),600); return; }
   if (b.id==='langBtn'){ S.lang=ar()?'en':'ar'; store.set('lang',S.lang); rebuild(); }
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.hidden=true; });
@@ -612,7 +641,7 @@ let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout((
 
 /* ================= boot ================= */
 loadState();
-const h=(location.hash||'').slice(1); if(['analyze','compare','market','news','opps','method'].includes(h)) S.tab=h;
+const h=(location.hash||'').slice(1); if(['analyze','compare','market','news','method'].includes(h)) S.tab=h;
 rebuild(); showTab(S.tab);
 if (S._fromLink) { try { history.replaceState(null,'',location.pathname+location.hash); } catch(e){} toast(tx('Loaded the shared unit','اتحمّلت الوحدة اللي اتبعتت')); }
 })();

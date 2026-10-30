@@ -6,18 +6,31 @@
 
   /* ---------- reference data ---------- */
   const ZONES = [
-    { id: 's90',  en: 'South 90th St',    ar: 'التسعين الجنوبي', rent: { full: 1500, semi: 1050, core: 750 } },
-    { id: 'n90',  en: 'North 90th St',    ar: 'التسعين الشمالي', rent: { full: 1350, semi: 950,  core: 680 } },
-    { id: 'bank', en: 'Banking District', ar: 'المنطقة البنكية', rent: { full: 1450, semi: 1000, core: 720 } },
-    { id: 'd5',   en: 'Fifth District',   ar: 'الحي الخامس',    rent: { full: 1250, semi: 880,  core: 620 } }
+    { id: 's90',  en: 'South 90th St',    ar: 'التسعين الجنوبي' },
+    { id: 'n90',  en: 'North 90th St',    ar: 'التسعين الشمالي' },
+    { id: 'bank', en: 'Banking District', ar: 'المنطقة البنكية' },
+    { id: 'd5',   en: 'Fifth District',   ar: 'الحي الخامس' }
   ];
-  const FIN_COST   = { full: 0, semi: 9000, core: 16000 };   // EGP per m² to reach "fitted"
+  /* Rent by building grade, from Knight Frank Cairo office review Q2 2026 (USD/m²/year,
+     converted at 54.58 EGP and divided by 12). Grade A business park ≈ $348, Grade B ≈ $283.5.
+     Semi-finished and core & shell rents are assumed shares of the fitted rent. */
+  const FX_REF = 54.58;
+  const GRADES = {
+    A: { en: 'Grade A business park', ar: 'بيزنس بارك Grade A', usdYr: 348.0 },
+    B: { en: 'Grade B building', ar: 'مبنى Grade B', usdYr: 283.5 }
+  };
+  Object.values(GRADES).forEach(g => { g.full = Math.round(g.usdYr * FX_REF / 12 / 10) * 10; });
+  const FIN_SHARE  = { full: 1, semi: 0.70, core: 0.50 };    // rent of a unit as is, vs fitted
+  const FIN_COST   = { full: 0, semi: 12000, core: 25000 };  // EGP per m² to reach "fitted"
   const FIN_MONTHS = { full: 0, semi: 3, core: 5 };          // months of works after delivery
-  const LEASE_UP   = { full: 2, semi: 5, core: 8 };          // months to find a tenant, as is
+  const LEASE_UP   = { full: 6, semi: 8, core: 9 };          // months to find a tenant
+  const YIELD_CHECK = 0.12;                                   // gross yields above this are flagged
+  const CASH_DISC_MAX = 0.30;                                 // cap on the estimated cash discount
+  /* pg is added to the base price-growth input; delay pushes delivery (and rent) back. */
   const SCN = {
-    low:  { pg: 0.04, rf: 0.90, dep: +4 },
-    base: { pg: 0.10, rf: 1.00, dep:  0 },
-    high: { pg: 0.16, rf: 1.10, dep: -3 }
+    low:  { pg: -6, rf: 0.90, dep: +4, delay: 12 },
+    base: { pg:  0, rf: 1.00, dep:  0, delay: 0 },
+    high: { pg: +8, rf: 1.10, dep: -3, delay: 0 }
   };
   /* Bank certificates used as the safe alternative (NBE, 23 Oct 2026).
      nbe5: 14.25% paid monthly, reinvested -> effective yearly rate.
@@ -64,13 +77,13 @@
   /* ---------- validation ---------- */
   const LIMITS = {
     price: [100000, 2e9], area: [10, 100000], down: [0, 100], years: [0, 15], disc: [0, 50],
-    dp2: [0, 60], delpay: [0, 60], maint: [0, 20], cash: [0, 2e9]
+    dp2: [0, 60], delpay: [0, 60], maint: [0, 20], cash: [0, 2e9], rent: [0, 20000]
   };
   function validate(u) {
     const errs = {};
     for (const k of Object.keys(LIMITS)) {
       const v = u[k], [lo, hi] = LIMITS[k];
-      if (k === 'cash' && (!v || v === 0)) continue;
+      if ((k === 'cash' || k === 'rent') && (!v || v === 0)) continue;
       if (v === '' || v === null || !isFinite(v) || v < lo || v > hi) errs[k] = [lo, hi];
     }
     if (!errs.down && !errs.dp2 && !errs.delpay && (u.down + u.dp2 + u.delpay) > 100) errs.down = 'sum';
@@ -101,7 +114,7 @@
 
   /* ---------- main ---------- */
   function compute(u, A, opts) {
-    const H = opts.H, sc = SCN[opts.scn || 'base'], pg = opts.pg ?? sc.pg;
+    const H = opts.H, sc = SCN[opts.scn || 'base'], pg = opts.pg ?? ((A.pg ?? 14) + sc.pg) / 100;
     const MAXM = 12 * 30, HM = 12 * H;
     const P = buildPlan(u);
     const path = benchPath(A, H), rmAt = benchMonthly(path);
@@ -111,8 +124,10 @@
       let df = 1; for (let i = 1; i <= p.m; i++) df *= 1 + rmAt(i); return s + p.amt / df;
     }, 0);
     const cashEstimated = !(u.cash > 0) && !P.isCash;
-    const cashValue = u.cash > 0 ? u.cash : (P.isCash ? P.net : pvPlan);
+    const cashCapped = cashEstimated && pvPlan < P.net * (1 - CASH_DISC_MAX);
+    const cashValue = u.cash > 0 ? u.cash : (P.isCash ? P.net : Math.max(pvPlan, P.net * (1 - CASH_DISC_MAX)));
     const effDisc = P.net ? 1 - pvPlan / P.net : 0;
+    const delivery = u.delm + (sc.delay || 0);              // cautious scenario: delivery slips
 
     // resale value: developer buyers start below their purchase price on the resale market
     const resaleDisc = u.source === 'resale' ? 0 : (A.resaleDisc || 0) / 100;
@@ -124,28 +139,36 @@
     const finCost = doFinish ? (u.fin ?? FIN_COST[u.finish]) * u.area : 0;
     const leaseM = u.lease ?? (LEASE_UP[rentFinish] + (doFinish ? FIN_MONTHS[u.finish] : 0));
     const z = ZONES.find(x => x.id === u.zone) || ZONES[0];
-    const rentM2 = z.rent[rentFinish] * sc.rf * (1 - (A.negot || 0) / 100);
+    const grade = GRADES[u.grade] || GRADES.B;
+    const rentQuoted = u.rent > 0;
+    const rentM2 = rentQuoted ? u.rent * sc.rf : grade.full * FIN_SHARE[rentFinish] * sc.rf * (1 - (A.negot || 0) / 100);
     const opex = A.vac / 100 + A.svc / 100 + (A.tax ? 0.10 * (1 - 0.32) : 0);
-    const rentStart = u.delm + leaseM;
+    const rentStart = delivery + leaseM;
 
     const out = new Float64Array(MAXM + 1), rentN = new Float64Array(MAXM + 1), planPay = new Float64Array(MAXM + 1);
     P.plan.forEach(p => { if (p.m <= MAXM) { out[p.m] += p.amt; if (p.k === 'inst' || p.k === 'dp2' || p.k === 'del') planPay[p.m] += p.amt; } });
-    if (finCost > 0) out[u.delm] += finCost;
+    if (finCost > 0 && delivery <= MAXM) out[delivery] += finCost;
     const grossAt = m => u.area * rentM2 * Math.pow(1 + A.rentG / 100, Math.floor((m - rentStart - 1) / 12));
     for (let m = rentStart + 1; m <= MAXM; m++) rentN[m] = grossAt(m) * (1 - opex);
     if (rentStart + 1 <= MAXM) out[rentStart + 1] += grossAt(rentStart + 1);       // leasing commission: one month
     const cf = new Float64Array(MAXM + 1), cum = new Float64Array(MAXM + 1);
     for (let m = 0; m <= MAXM; m++) { cf[m] = rentN[m] - out[m]; cum[m] = (m ? cum[m - 1] : 0) + cf[m]; }
 
-    const unpaidAfter = m => P.plan.reduce((s, p) => s + (p.k !== 'maint' && p.m > m ? p.amt : 0), 0);
-    const feeAt = m => (A.saleFee + (A.dispTax ? 2.5 : 0) + ((m < u.delm || m < P.lastPay) ? (A.transfer || 0) : 0)) / 100;
+    // a buyer who takes over the plan values the remaining installments at today's money (certificate rate)
+    const unpaidAfter = m => P.plan.reduce((s, p) => {
+      if (p.k === 'maint' || p.m <= m) return s;
+      let df = 1; for (let i = m + 1; i <= p.m; i++) df *= 1 + rmAt(i);
+      return s + p.amt / df;
+    }, 0);
+    const unpaidNominal = m => P.plan.reduce((s, p) => s + (p.k !== 'maint' && p.m > m ? p.amt : 0), 0);
+    const feeAt = m => (A.saleFee + (A.dispTax ? 2.5 : 0) + ((m < delivery || m < P.lastPay) ? (A.transfer || 0) : 0)) / 100;
     const saleNet = m => value(m) * (1 - feeAt(m)) - unpaidAfter(m);
     const sellM = Math.max(0, Math.round(A.sellM || 0));
 
     // holding-period cash flows (sale closes at the end of the holding period)
     const cfH = Array.from(cf.slice(0, HM + 1)); cfH[HM] += saleNet(HM);
-    const irrM = bisect(r => npvConst(cfH, r), -0.5, 0.5);
-    const irr = Math.pow(1 + irrM, 12) - 1;
+    const irrM = bisect(r => npvConst(cfH, r), -0.2, 0.2);
+    const irr = isFinite(irrM) ? Math.pow(1 + irrM, 12) - 1 : NaN;
     const npv = npvPath(cfH, rmAt);
     let outH = 0, rentH = 0; for (let m = 0; m <= HM; m++) { outH += out[m]; rentH += rentN[m]; }
     const profit = cfH.reduce((s, x) => s + x, 0);
@@ -194,22 +217,25 @@
 
     // score out of 100: return vs certificate 50, rent level 20, delivery 15, developer 15
     const sRet = clamp(25 + (real - benchReal) * 250, 0, 50);
-    const sRent = clamp(20 * rentM2 / (z.rent.full * sc.rf), 0, 20);
-    const sDel = u.delm <= 0 ? 15 : u.delm <= 12 ? 10 : u.delm <= 24 ? 6 : 3;
+    const sRent = clamp(20 * rentM2 / (grade.full * sc.rf), 0, 20);
+    const sDel = delivery <= 0 ? 15 : delivery <= 12 ? 10 : delivery <= 24 ? 6 : 3;
     const sDev = { big: 15, mid: 9, new: 4 }[u.dev] ?? 8;
     let score = Math.round(sRet + sRent + sDel + sDev);
     if (!(npv >= 0)) score = Math.min(score, 49);
 
     let totalPlan = 0; P.plan.forEach(p => totalPlan += p.amt);
+    const grossOnCash = g1 / cashValue, yieldWarn = grossOnCash > YIELD_CHECK;
+    const beats = isFinite(real) && real >= benchReal;
     return {
       ...P, cashValue, cashEstimated, pvPlan, effDisc, resaleDisc, finCost, doFinish, rentFinish, leaseM, rentStart, rentM2,
       rentMonth: g1 / 12, g1, noi1, gross: g1 / P.net, netY: noi1 / allIn, cap: noi1 / value(0), grm: P.net / g1,
       saleH: value(HM), saleNetH: saleNet(HM), roi, multiple, irr, real, usd: (1 + irr) / (1 + dep) - 1, dep, npv,
       paybackM, saleBeM, coverY, lastPlan, beGrowth, years, cum, saleNet, feeAt, value, line, score, ppm: P.net / u.area,
-      outH, totalPlan, allIn, bench: path, benchAnn, benchReal, sellM, opex, zone: z
+      outH, totalPlan, allIn, bench: path, benchAnn, benchReal, sellM, opex, zone: z, grade, rentQuoted, cashCapped,
+      delivery, delay: sc.delay || 0, pg, grossOnCash, yieldWarn, beats, unpaidNominal
     };
   }
 
-  const api = { ZONES, FIN_COST, FIN_MONTHS, LEASE_UP, SCN, NBE5_EFF, benchPath, benchAnnualised, benchGrowth, validate, buildPlan, compute, bisect };
+  const api = { ZONES, GRADES, FIN_SHARE, FX_REF, YIELD_CHECK, CASH_DISC_MAX, FIN_COST, FIN_MONTHS, LEASE_UP, SCN, NBE5_EFF, benchPath, benchAnnualised, benchGrowth, validate, buildPlan, compute, bisect };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.AQM = api;
 })(typeof window !== 'undefined' ? window : globalThis);
