@@ -5,6 +5,8 @@ const E = window.AQM;
 
 /* ================= content ================= */
 const PHONE = '201145721501', PHONE_TXT = '011 45 72 1501';
+/* Google Apps Script web app that appends PDF requests to the "AqarMath — PDF requests" sheet. Empty = not set up yet. */
+const LEAD_URL = '';
 const DESTS = [{id:'nc',en:'Fifth Settlement, New Cairo',ar:'التجمع الخامس',live:true},{id:'cap',en:'New Capital',ar:'العاصمة الإدارية'},{id:'zayed',en:'Sheikh Zayed',ar:'الشيخ زايد'},{id:'nco',en:'North Coast',ar:'الساحل الشمالي'}];
 const TYPES = [{id:'office',en:'Office',ar:'مكتب إداري',live:true},{id:'apt',en:'Apartment',ar:'شقة سكنية'},{id:'svc',en:'Serviced apartment',ar:'شقة فندقية'},{id:'villa',en:'Villa / townhouse',ar:'فيلا / تاون هاوس'},{id:'retail',en:'Retail shop',ar:'محل تجاري'},{id:'clinic',en:'Clinic',ar:'عيادة'}];
 const FIN = {full:{en:'Fitted',ar:'كامل التشطيب'}, semi:{en:'Semi-finished',ar:'نص تشطيب'}, core:{en:'Core & shell',ar:'Core & Shell'}};
@@ -460,8 +462,34 @@ function updateLinks(){
 function preparePrint(){
   const u=S.U.a;
   $('#printSub').textContent = (S.U.a.name ? S.U.a.name + ' · ' : '') + unitLine(u);
+  const L=getLead(); $('#printFor').textContent = L ? `${tx('Prepared for','مُعد لـ')} ${L.name} · ${L.title} · ${L.company}` : '';
   $('#printDate').textContent = new Date().toLocaleDateString(ar()?'ar-EG-u-nu-latn':'en-GB',{day:'numeric',month:'long',year:'numeric'});
   $('#printFoot').innerHTML = `${tx('Calculated with AqarMath · aqarmath.vercel.app','محسوب بـ AqarMath · aqarmath.vercel.app')}<br>${tx('Estimates for illustration, not investment advice. Assumptions and sources are on the website.','الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الافتراضات والمصادر موجودة على الموقع.')}<br>${tx('Questions about these numbers','أسئلة عن الحسبة')}: ${tx('Hesham Rodiny','هشام روديني')} · ${PHONE_TXT}`;
+}
+function getLead(){ try { return JSON.parse(store.get('aqm:lead')||'null'); } catch(e){ return null; } }
+function openLead(){
+  const d=$('#leadDlg'), L=getLead()||{};
+  ['name','phone','company','title'].forEach(k=>{ $('#ld-'+k).value=L[k]||''; $('#ld-'+k).closest('.f').classList.remove('bad'); });
+  $('#ld-ok').checked=false; $('#ld-ok-err').classList.remove('on');
+  $('#leadStep1').hidden=false; $('#leadStep2').hidden=true;
+  if (d.showModal) d.showModal(); else d.setAttribute('open','');
+  setTimeout(()=>$('#ld-name').focus(),50);
+}
+function submitLead(){
+  const v=k=>$('#ld-'+k).value.trim(), L={name:v('name'),phone:v('phone'),company:v('company'),title:v('title')};
+  const okPhone=/^\+?[0-9][0-9 \-]{8,18}$/.test(L.phone) && L.phone.replace(/\D/g,'').length>=10;
+  const bad={name:L.name.length<2,phone:!okPhone,company:L.company.length<2,title:L.title.length<2};
+  Object.keys(bad).forEach(k=>$('#ld-'+k).closest('.f').classList.toggle('bad',bad[k]));
+  $('#ld-ok-err').classList.toggle('on',!$('#ld-ok').checked);
+  const first=Object.keys(bad).find(k=>bad[k]); if(first){ $('#ld-'+first).focus(); return; }
+  if(!$('#ld-ok').checked){ $('#ld-ok').focus(); return; }
+  store.set('aqm:lead',JSON.stringify(L));
+  const r=R.a||{}, row={...L, lang:S.lang, unit:unitLine(S.U.a), real:pct(r.real), cert:pct(r.benchReal), exit:S.exit, hold:S.hold>=30?'for good':S.hold, link:shareLink()};
+  if (LEAD_URL) { try { fetch(LEAD_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(row)}); } catch(e){} }
+  const msg=tx(`Hi Hesham, I downloaded an AqarMath report.\n• ${L.name} · ${L.title} · ${L.company}\n• ${L.phone}\n• ${row.unit}\n• After inflation ${row.real} vs certificate ${row.cert}\n${row.link}`,
+               `أهلاً أستاذ هشام، نزّلت تقرير من AqarMath.\n• ${L.name} · ${L.title} · ${L.company}\n• ${L.phone}\n• ${row.unit}\n• بعد التضخم ${row.real} قصاد الشهادة ${row.cert}\n${row.link}`);
+  $('#leadWa').href=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+  $('#leadStep1').hidden=true; $('#leadStep2').hidden=false; $('#leadPrint').focus();
 }
 async function copyShare(){
   const link=shareLink(); $('#shareInput').value=link; $('#shareOut').hidden=false;
@@ -514,10 +542,10 @@ function renderMethod(){
   </ul></div>
   <div class="panel" id="disclosure"><div class="ph"><h2>${tx('Disclosure','الإفصاح')}</h2></div><p style="margin:0;color:var(--ink2)">${tx('AqarMath was founded by Hesham Rodiny, who works in real estate sales and may discuss units he earns a commission on. The calculations use the same formulas for every unit, whoever sells it. No developer pays to appear or to change a result, and the site does not list units for sale. Nothing here is investment advice.','AqarMath أسسها هشام روديني، وهو شغال في مبيعات العقارات وممكن يكلمك عن وحدات بياخد عليها عمولة. الحسابات بنفس المعادلات لكل وحدة مهما كان مين بيبيعها. محدش من المطورين بيدفع عشان يظهر أو عشان نتيجة تتغير، والموقع مش بيعرض وحدات للبيع. مفيش حاجة هنا نصيحة استثمارية.')}</p></div>
   <div class="panel" id="privacy"><div class="ph"><h2>${tx('Privacy','الخصوصية')}</h2></div><ul>
-    <li>${tx('No sign-up. What you type stays in your browser on this device and is not sent to us.','مفيش تسجيل. اللي بتكتبه بيفضل في المتصفح على جهازك ومش بيتبعتلنا.')}</li>
+    <li>${tx('No sign-up. What you type stays in your browser on this device and is not sent to us. The only exception: if you ask for a PDF, the name, mobile, company and job title you enter, with a summary of the unit, are saved for Hesham Rodiny to follow up.','مفيش تسجيل. اللي بتكتبه بيفضل في المتصفح على جهازك ومش بيتبعتلنا. الاستثناء الوحيد: لو طلبت PDF، الاسم والموبايل والشركة والوظيفة اللي بتكتبها، مع ملخص الوحدة، بيتسجلوا عند هشام روديني عشان يتابع معاك.')}</li>
     <li>${tx('WhatsApp opens only after you tick the consent box, and sends only the message you see before pressing send.','واتساب مش بيفتح غير بعد ما تعلّم على الموافقة، وبيبعت الرسالة اللي إنت شايفها بس قبل ما تدوس إرسال.')}</li>
     <li>${tx('We count anonymous page visits (Vercel Web Analytics) with no cookies and no personal data.','بنعدّ زيارات الصفحات من غير هوية (Vercel Web Analytics) من غير كوكيز ولا بيانات شخصية.')}</li>
-    <li>${tx('To delete: use “Clear my data on this device” on the Analyze page, and reply “delete” on WhatsApp to remove the chat.','للمسح: استخدم «امسح بياناتي من الجهاز» في صفحة التحليل، وابعت «امسح» على واتساب عشان نمسح المحادثة.')}</li>
+    <li>${tx('To delete: use “Clear my data on this device” on the Analyze page, and send “delete” on WhatsApp to 011 45 72 1501 to remove your chat and PDF request.','للمسح: استخدم «امسح بياناتي من الجهاز» في صفحة التحليل، وابعت «امسح» على واتساب لـ011 45 72 1501 عشان نمسح المحادثة وطلب الـPDF.')}</li>
   </ul></div>
   <div class="panel"><div class="ph"><h2>${tx('Limitation','حدود المسؤولية')}</h2></div><p style="margin:0;color:var(--ink2)">${tx('Results are estimates from published averages and your inputs. Real rents, prices, fees and delivery dates differ by building and contract. Check the contract and get independent advice before you pay. AqarMath and Hesham Rodiny are not liable for decisions made from these estimates.','النتايج تقديرات من متوسطات منشورة والأرقام اللي دخّلتها. الإيجار والسعر والرسوم ومواعيد الاستلام الحقيقية بتختلف من مبنى لمبنى ومن عقد لعقد. راجع العقد وخد رأي مستقل قبل ما تدفع. AqarMath وهشام روديني مش مسؤولين عن قرارات مبنية على التقديرات دي.')}</p></div>
   <div class="panel"><div class="ph"><h2>${tx('Sources','المصادر')}</h2></div><div class="scroll"><table class="t" id="srcTable2"></table></div></div>`;
@@ -682,12 +710,15 @@ document.addEventListener('click',e=>{
   if (b.dataset.scn){ S.scn=b.dataset.scn; $$('#scnSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); return renderAll(); }
   if (b.dataset.cat){ S.news=b.dataset.cat; return renderNews(); }
   if (b.id==='moreKpis'){ S.moreK=!S.moreK; return renderAnalyze(); }
-  if (b.id==='pdfBtn'){ preparePrint(); window.print(); return; }
+  if (b.id==='pdfBtn'){ openLead(); return; }
+  if (b.id==='leadClose'){ $('#leadDlg').close(); return; }
+  if (b.id==='leadPrint'){ $('#leadDlg').close(); preparePrint(); setTimeout(()=>window.print(),80); return; }
   if (b.id==='shareBtn' || b.id==='shareCopy2'){ copyShare(); return; }
   if (b.id==='storyMore'){ S.moreS=!S.moreS; return renderAnalyze(); }
-  if (b.id==='clearData'){ try{ localStorage.removeItem('aqm:v3'); localStorage.removeItem('aqm:v2'); localStorage.removeItem('lang'); }catch(_){} S.consent=false; toast(tx('Cleared from this device','اتمسحت من الجهاز')); setTimeout(()=>location.replace(location.pathname),600); return; }
+  if (b.id==='clearData'){ try{ localStorage.removeItem('aqm:lead'); localStorage.removeItem('aqm:v3'); localStorage.removeItem('aqm:v2'); localStorage.removeItem('lang'); }catch(_){} S.consent=false; toast(tx('Cleared from this device','اتمسحت من الجهاز')); setTimeout(()=>location.replace(location.pathname),600); return; }
   if (b.id==='langBtn'){ S.lang=ar()?'en':'ar'; store.set('lang',S.lang); rebuild(); }
 });
+document.addEventListener('submit',e=>{ if(e.target.id==='leadForm'){ e.preventDefault(); submitLead(); } });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.hidden=true; });
 window.addEventListener('beforeprint',()=>{ preparePrint(); });
 let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ pop.hidden=true; renderAll(); },150); });

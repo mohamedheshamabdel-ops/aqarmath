@@ -327,3 +327,17 @@ footer.foot{border-top:1px solid var(--line);padding-block:22px;color:var(--mute
 @media (max-width:720px){ .inc-sum{grid-template-columns:repeat(2,minmax(0,1fr))} }
 #schedTable td,#schedTable th{white-space:normal;word-break:break-word}
 @media (max-width:720px){ #schedTable{font-size:13px;table-layout:fixed} #schedTable th:first-child,#schedTable td:first-child{width:52px} }
+.dlg{border:0;border-radius:16px;padding:0;width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(10,30,32,.3)}
+.dlg::backdrop{background:rgba(10,30,32,.55)}
+.dlg form{padding:20px 22px 22px}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dlg-head h2{font-size:19px;margin:0}
+.dlg .x{background:none;border:0;font-size:26px;line-height:1;color:var(--muted);cursor:pointer;padding:4px 8px}
+.dlg-sub{margin:8px 0 14px;color:var(--ink2);font-size:14px}
+.dlg .fg{grid-template-columns:minmax(0,1fr)}
+.dlg small.err{display:none} .dlg .f.bad small.err,.dlg small.err.on{display:block}
+.dlg input:not([type=checkbox]){width:100%}
+.dlg .btn{justify-content:center}
+#printFor{font-weight:600;margin-top:4px}
+@media print{ .dlg{display:none!important} }
+.dlg small.err{font-size:12px;color:var(--bad);font-weight:600}
