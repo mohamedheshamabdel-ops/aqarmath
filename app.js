@@ -451,8 +451,8 @@ function unitLine(u){ return `${zoneName(u.zone)} · ${FIN[u.finish][S.lang]} ·
 function updateLinks(){
   const r=R.a, u=S.U.a; if(!r) return;
   const msg = tx(
-    `Hi Hesham, I analyzed a unit on AqarMath and would like a free consultation.\n• ${unitLine(u)}\n• After inflation ${pct(r.real)} vs certificate ${pct(r.benchReal)}\n${shareLink()}`,
-    `أهلاً أستاذ هشام، حلّلت وحدة على AqarMath وعايز استشارة مجانية.\n• ${unitLine(u)}\n• العائد بعد التضخم ${pct(r.real)} قصاد الشهادة ${pct(r.benchReal)}\n${shareLink()}`);
+    `Hi Hesham, I analyzed a unit on AqarMath and have a question about the numbers.\n• ${unitLine(u)}\n• After inflation ${pct(r.real)} vs certificate ${pct(r.benchReal)}\n${shareLink()}`,
+    `أهلاً أستاذ هشام، حلّلت وحدة على AqarMath وعندي سؤال عن الحسبة.\n• ${unitLine(u)}\n• العائد بعد التضخم ${pct(r.real)} قصاد الشهادة ${pct(r.benchReal)}\n${shareLink()}`);
   $('#waBtn').href = `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
   $('#waBtn').setAttribute('aria-disabled', String(!S.consent)); $('#waBtn').classList.toggle('off', !S.consent);
   $('#consent').checked = !!S.consent;
@@ -461,7 +461,7 @@ function preparePrint(){
   const u=S.U.a;
   $('#printSub').textContent = (S.U.a.name ? S.U.a.name + ' · ' : '') + unitLine(u);
   $('#printDate').textContent = new Date().toLocaleDateString(ar()?'ar-EG-u-nu-latn':'en-GB',{day:'numeric',month:'long',year:'numeric'});
-  $('#printFoot').innerHTML = `${tx('Calculated with AqarMath · aqarmath.vercel.app','محسوب بـ AqarMath · aqarmath.vercel.app')}<br>${tx('Estimates for illustration, not investment advice. Assumptions and sources are on the website.','الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الافتراضات والمصادر موجودة على الموقع.')}<br>${tx('Free consultation','استشارة مجانية')}: ${tx('Hesham Rodiny','هشام روديني')} · ${PHONE_TXT}`;
+  $('#printFoot').innerHTML = `${tx('Calculated with AqarMath · aqarmath.vercel.app','محسوب بـ AqarMath · aqarmath.vercel.app')}<br>${tx('Estimates for illustration, not investment advice. Assumptions and sources are on the website.','الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الافتراضات والمصادر موجودة على الموقع.')}<br>${tx('Questions about these numbers','أسئلة عن الحسبة')}: ${tx('Hesham Rodiny','هشام روديني')} · ${PHONE_TXT}`;
 }
 async function copyShare(){
   const link=shareLink(); $('#shareInput').value=link; $('#shareOut').hidden=false;
