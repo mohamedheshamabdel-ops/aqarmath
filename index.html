@@ -3,260 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="AqarMath turns a property payment plan into investment numbers: rental yield, IRR, break-even dates, and comparison with certificates, gold and EGX30. English and Arabic.">
+<title>AqarMath · Real estate, by the numbers</title>
+<meta name="description" content="Enter a property payment plan and see what the unit really earns: rental yield, IRR, break-even dates, and a fair comparison with bank certificates, gold and EGX30. English and Arabic.">
+<link rel="canonical" href="https://aqarmath.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AqarMath">
 <meta property="og:title" content="AqarMath · Real estate, by the numbers">
 <meta property="og:description" content="Enter a payment plan. See what the unit really earns.">
-<meta property="og:image" content="/og.png">
-<meta property="og:type" content="website">
+<meta property="og:url" content="https://aqarmath.vercel.app/">
+<meta property="og:image" content="https://aqarmath.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://aqarmath.vercel.app/og.png">
+<meta name="theme-color" content="#10262A">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
-</head>
-<body>
-<title>AqarMath</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* Layout: plan inputs on one side, the unit's money story on the other; summary sentences and the milestone line first, tables after.
-   Identity: limestone ground, petrol ink, one brass accent reserved for milestones. Data series use a colour-blind-validated palette. */
-:root{
-  --bg:#EEF0EC; --surface:#FBFCFA; --sunk:#F3F5F1; --ink:#10262A; --ink2:#3F5458; --muted:#64767A;
-  --line:#D9DED8; --grid:#E6EAE4; --axis:#BFC8C1; --accent:#0E5A63; --accent-ink:#FFFFFF; --accent-soft:#DDEBEA;
-  --brass:#9C7426; --brass-soft:#F3EAD6;
-  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
-  --good:#1F7A3A; --good-soft:#E1F1E5; --bad:#B42318; --bad-soft:#FBE7E4; --warn-ink:#7A4B00; --warn-bg:#FFF4DC;
-  --display:"Schibsted Grotesk","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --body:"Schibsted Grotesk","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:12px;
-}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0D1416; --surface:#142022; --sunk:#10191B; --ink:#E5ECEA; --ink2:#A8B7B4; --muted:#7D8F8C;
-  --line:#24312F; --grid:#1B2627; --axis:#35423F; --accent:#46AEB9; --accent-ink:#06171A; --accent-soft:#16312F;
-  --brass:#D4AA55; --brass-soft:#2B2414;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
-  --good:#4CC174; --good-soft:#12291B; --bad:#F07167; --bad-soft:#2E1715; --warn-ink:#F2C46B; --warn-bg:#2B2414; color-scheme:dark } }
-:root[data-theme="dark"]{
-  --bg:#0D1416; --surface:#142022; --sunk:#10191B; --ink:#E5ECEA; --ink2:#A8B7B4; --muted:#7D8F8C;
-  --line:#24312F; --grid:#1B2627; --axis:#35423F; --accent:#46AEB9; --accent-ink:#06171A; --accent-soft:#16312F;
-  --brass:#D4AA55; --brass-soft:#2B2414;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
-  --good:#4CC174; --good-soft:#12291B; --bad:#F07167; --bad-soft:#2E1715; --warn-ink:#F2C46B; --warn-bg:#2B2414; color-scheme:dark }
-html[lang="ar"]{ --display:"IBM Plex Sans Arabic","Schibsted Grotesk",system-ui,sans-serif; --body:"IBM Plex Sans Arabic","Schibsted Grotesk",system-ui,sans-serif; }
-
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;margin:0}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
-button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-a{color:var(--accent)}
-.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.num{font-variant-numeric:tabular-nums;unicode-bidi:plaintext}
-
-/* header */
-header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
-.top-row{display:flex;align-items:center;gap:14px;min-height:62px;flex-wrap:wrap;padding-block:6px}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
-.brand svg{flex:none}
-.wordmark{font-family:'Schibsted Grotesk',system-ui,sans-serif;font-weight:400;font-size:19px;letter-spacing:-.01em;direction:ltr;unicode-bidi:isolate}
-.wordmark b{font-weight:800}
-.wm{font-family:"Instrument Sans",var(--display);font-weight:700;font-size:19px;letter-spacing:-.03em}
-.wm span{font-weight:500;color:var(--brass)}
-.brand-sub{font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted);border-inline-start:1px solid var(--line);padding-inline-start:10px}
-@media (max-width:1440px){.brand-sub,.dest > span{display:none}}
-.dest{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2)}
-.dest select{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:4px 10px;font-size:13px;min-height:32px}
-nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;justify-content:flex-end;min-width:0}
-nav.tabs button{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--ink2);font-weight:500;white-space:nowrap;position:relative}
-nav.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700}
-nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;inset-inline:12px;bottom:-7px;height:3px;border-radius:3px;background:var(--accent)}
-nav.tabs button:hover{background:var(--sunk)}
-.lang{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;min-height:36px;white-space:nowrap}
-.proto{font-size:12px;color:var(--warn-ink);background:var(--warn-bg);border-radius:999px;padding:2px 10px;white-space:nowrap}
-
-main{padding-block:28px 56px}
-.page[hidden]{display:none}
-h1{font-family:var(--display);font-size:clamp(24px,3.2vw,32px);line-height:1.15;letter-spacing:-.02em;margin:0 0 6px;font-weight:800;text-wrap:balance}
-html[lang="ar"] h1{letter-spacing:0;line-height:1.35}
-h2{font-family:var(--display);font-size:17px;margin:0;font-weight:700;text-wrap:balance}
-.sub{color:var(--ink2);margin:0 0 22px;max-width:70ch}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
-.panel.flat{background:transparent;border:0;padding:0}
-.ph{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.ph p{margin:0;color:var(--muted);font-size:13px}
-.scroll{overflow-x:auto}
-.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
-.grid2.fit{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
-.mt{margin-top:16px}
-
-/* analyze layout */
-.analyze{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
-.inputs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 78px);max-height:calc(100vh - 100px);overflow:auto}
-.group{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
-.group:first-of-type{border-top:0;padding-top:0;margin-top:0}
-.more summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--accent)}
-.group h3{font-size:13px;font-weight:700;color:var(--ink2);margin:0 0 10px}
-.fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.f{display:grid;gap:3px;min-width:0}
-.f.wide{grid-column:1/-1}
-.f label{font-size:12.5px;color:var(--ink2)}
-.f input,.f select,select.plain{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:38px}
-.f input[type=number]{font-variant-numeric:tabular-nums}
-.f .hint{font-size:11.5px;color:var(--muted)}
-.soon{font-size:11px;color:var(--muted)}
-
-/* story */
-.story{background:var(--ink);color:var(--surface);border-radius:var(--r);padding:22px 24px}
-.story h2{color:var(--surface);font-size:21px;line-height:1.35}
-.story ol{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
-.story li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:15px;line-height:1.55}
-.story li .n{width:24px;height:24px;border-radius:50%;background:var(--brass);color:var(--ink);font-size:12px;font-weight:800;display:grid;place-items:center;margin-top:1px}
-.story b{color:var(--surface)}
-.story .term{color:var(--surface);text-decoration-color:color-mix(in srgb,var(--surface) 45%,transparent)}
-
-/* milestone line */
-.mline{position:relative;height:64px;margin:6px 8px 4px}
-.mline .bar{position:absolute;inset-inline:0;top:22px;height:6px;border-radius:6px;background:linear-gradient(to var(--endside),var(--bad-soft) 0 var(--be,0%),var(--good-soft) var(--be,0%) 100%)}
-.mline .tick{position:absolute;top:44px;transform:translateX(-50%);font-size:11.5px;color:var(--muted);white-space:nowrap}
-html[dir="rtl"] .mline .tick{transform:translateX(50%)}
-.mline .mk{position:absolute;top:12px;width:26px;height:26px;margin-inline-start:-13px;border-radius:50%;background:var(--brass);color:var(--ink);border:3px solid var(--surface);display:grid;place-items:center;font-size:11px;font-weight:800}
-.mlist{list-style:none;padding:0;margin:12px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 18px;font-size:13.5px}
-.mlist li{display:flex;align-items:center;gap:8px}
-.mlist .n{width:22px;height:22px;border-radius:50%;background:var(--brass);color:var(--ink);font-size:11px;font-weight:800;display:grid;place-items:center;flex:none}
-.mlist b{margin-inline-start:auto;font-weight:600;white-space:nowrap}
-.mline .now{position:absolute;top:14px;height:22px;width:2px;background:var(--ink2)}
-
-/* kpis */
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
-.kpi .lab{font-size:12.5px;color:var(--ink2)}
-.kpi .val{font-family:var(--display);font-size:22px;font-weight:700;margin-top:2px;line-height:1.2}
-.kpi .meta{font-size:12px;color:var(--muted)}
-.kpi.hi{border-color:var(--accent);background:var(--accent-soft)}
-
-/* glossary term */
-.term{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:help;text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px;text-decoration-color:var(--accent)}
-.pop{position:absolute;z-index:40;max-width:320px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(10,30,32,.16);font-size:13.5px;line-height:1.55}
-.pop b{display:block;font-size:14px;margin-bottom:4px}
-.pop code{display:block;margin-top:8px;background:var(--sunk);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:12.5px;color:var(--ink2)}
-
-/* tables */
-table.t{width:100%;border-collapse:collapse;font-size:14px}
-.t th,.t td{padding:9px 8px;border-bottom:1px solid var(--grid);text-align:start;vertical-align:middle}
-.t thead th{font-weight:600;color:var(--ink2);font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
-.t td.v{font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
-.t td.v.win{color:var(--good);font-weight:700}
-.t td.v.win::after{content:" ✓";font-size:12px}
-.t td.neg{color:var(--bad)}
-.t td.k small{display:block;color:var(--muted);font-size:12px;font-weight:400}
-.t tr.total td{font-weight:700;border-top:1px solid var(--line)}
-.tall{max-height:360px;overflow:auto}
-.tall thead th{position:sticky;top:0;background:var(--surface)}
-.pill{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap}
-.pill.good{background:var(--good-soft);color:var(--good)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
-.pill.off{background:var(--accent-soft);color:var(--accent)} .pill.mkt{background:var(--good-soft);color:var(--good)}
-.pill.asm{background:var(--warn-bg);color:var(--warn-ink)} .pill.ctr{background:var(--sunk);color:var(--ink2);border:1px solid var(--line)}
-
-/* charts */
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink2);margin-bottom:8px}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
-.chart-box{position:relative;height:300px}
-.chart-box svg{direction:ltr;display:block;width:100%;height:100%;overflow:visible}
-.chart-box text{font-family:var(--body);font-size:12px;fill:var(--muted)}
-.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--surface);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.5;white-space:nowrap;opacity:0;transition:opacity .1s;z-index:2}
-.tip b{display:block;font-weight:600;margin-bottom:2px}
-.tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px}
-.note{font-size:12px;color:var(--muted);margin:10px 0 0}
-details.tbl{margin-top:10px;font-size:13px} details.tbl summary{cursor:pointer;color:var(--ink2)}
-details.panel > summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;font-family:var(--display)}
-details.panel > summary::after{content:"+";color:var(--muted)} details.panel[open] > summary::after{content:"−"}
-details.panel[open] > summary{margin-bottom:16px}
-.be-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding:11px 0;border-bottom:1px solid var(--grid);align-items:center}
-.be-row:last-child{border-bottom:0}
-.be-row .val{font-weight:700;font-variant-numeric:tabular-nums;text-align:end}
-.be-row small{color:var(--muted);font-size:12px;grid-column:1/-1}
-
-/* toolbar/seg */
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
-.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
-.seg button{border:0;background:none;padding:5px 11px;border-radius:6px;cursor:pointer;color:var(--ink2);font-size:13.5px}
-.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.field-inline{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2)}
-.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600;min-height:40px}
-.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
-.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font-weight:600;text-decoration:underline;text-underline-offset:3px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--s1);display:inline-block;flex:none}
-.dot.b{background:var(--s2)}
-
-/* compare */
-.units{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.unit{border-top:4px solid var(--s1)} .unit.b{border-top-color:var(--s2)}
-.verdict{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-top:16px}
-.verdict .bar{width:4px;border-radius:4px;background:var(--s1);flex:none}
-.verdict h2{font-size:18px;line-height:1.5}
-.verdict p{margin:6px 0 0;color:var(--ink2)}
-
-/* market/news/opps */
-.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}
-.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
-.tile .lab{font-size:12.5px;color:var(--ink2)} .tile .val{font-family:var(--display);font-size:26px;font-weight:800;margin:4px 0 2px} .tile .meta{font-size:12px;color:var(--muted)}
-.barcell{display:flex;align-items:center;gap:8px} .barcell i{display:block;height:8px;border-radius:4px;background:var(--accent)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--ink2);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-.chip.static{cursor:default}
-.news{display:grid;gap:12px}
-.news-item{display:grid;grid-template-columns:130px minmax(0,1fr);gap:18px}
-.news-meta{font-size:13px;color:var(--muted);display:grid;gap:6px;align-content:start}
-.news-item h2{font-size:17px;line-height:1.4}
-.news-item p{margin:6px 0 0;color:var(--ink2);font-size:14px;max-width:72ch}
-.why{margin-top:10px;font-size:13.5px;border-inline-start:3px solid var(--brass);padding:2px 0 2px 12px}
-html[dir="rtl"] .why{padding:2px 12px 2px 0}
-.src{font-size:13px;margin-top:8px}
-.opps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.opp{display:grid;gap:12px}
-.opp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.score{min-width:68px;text-align:center;border-radius:10px;background:var(--brass-soft);padding:6px 8px}
-.score b{display:block;font-family:var(--display);font-size:22px;line-height:1.1} .score span{font-size:11px;color:var(--ink2)}
-.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:13px}
-.facts div{background:var(--sunk);border-radius:8px;padding:8px} .facts small{display:block;color:var(--muted)} .facts b{font-variant-numeric:tabular-nums}
-.disclose{background:var(--warn-bg);color:var(--warn-ink);border-radius:var(--r);padding:12px 16px;font-size:13px;margin-top:16px}
-footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:12px}
-
-@media (max-width:1060px){ .analyze{grid-template-columns:minmax(0,1fr)} .inputs{position:static;max-height:none} .tiles{grid-template-columns:repeat(3,minmax(0,1fr))} }
-@media (max-width:860px){ .grid2{grid-template-columns:minmax(0,1fr)} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:720px){
-  .units,.opps{grid-template-columns:minmax(0,1fr)}
-  nav.tabs{order:4;flex-basis:100%;justify-content:flex-start}
-  .proto{display:none} .lang{margin-inline-start:auto}
-  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .chart-box{height:250px} .panel{padding:16px} .story{padding:18px}
-  .news-item{grid-template-columns:minmax(0,1fr);gap:6px} .news-meta{display:flex;flex-wrap:wrap;gap:8px}
-}
-@media (max-width:340px){ .fg{grid-template-columns:minmax(0,1fr)} }
-@media (max-width:400px){ .tiles{grid-template-columns:minmax(0,1fr)} }
-@media (prefers-reduced-motion:reduce){*{transition:none !important}}
-</style>
+<link rel="stylesheet" href="/styles.css">
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
 
 <header class="top">
   <div class="wrap top-row">
-    <div class="brand" aria-label="AqarMath">
+    <a class="brand" href="/" aria-label="AqarMath">
       <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14.3" fill="#10262A"/><path d="M14 30 L32 16 L50 30" fill="none" stroke="#B48A36" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 39 H44 M20 48 H44" stroke="#EEF0EC" stroke-width="5.5" stroke-linecap="round"/></svg>
       <span class="wm" dir="ltr">Aqar<span>Math</span></span><span class="brand-sub" data-ar="العقار بالأرقام">Real estate, by the numbers</span>
-    </div>
-    <label class="dest" for="destSel"><span data-ar="الوجهة">Destination</span>
-      <select id="destSel"></select>
-    </label>
-    <span class="proto" data-ar="نموذج أولي">Prototype</span>
-    <nav class="tabs" role="tablist" aria-label="Pages">
-      <button role="tab" aria-selected="true" data-tab="analyze" data-ar="حلّل وحدة">Analyze a unit</button>
-      <button role="tab" aria-selected="false" data-tab="compare" data-ar="قارن">Compare</button>
-      <button role="tab" aria-selected="false" data-tab="market" data-ar="السوق">Market</button>
-      <button role="tab" aria-selected="false" data-tab="news" data-ar="الأخبار">News</button>
-      <button role="tab" aria-selected="false" data-tab="opps" data-ar="فرص مختارة">Opportunities</button>
-    </nav>
+    </a>
+    <span class="beta" data-ar="نسخة تجريبية">Beta</span>
+    <nav class="tabs" role="tablist" aria-label="Pages" id="tabs"></nav>
     <button class="lang" id="langBtn" type="button">العربية</button>
   </div>
 </header>
@@ -265,33 +42,53 @@ footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--mute
 
 <!-- ================= ANALYZE ================= -->
 <section class="page" id="analyze">
+  <div class="print-only print-head"><div><span class="wm" dir="ltr">Aqar<span>Math</span></span><div id="printSub"></div></div><div id="printDate"></div></div>
   <h1 data-ar="دخّل خطة السداد، وشوف الوحدة هتكسّبك إيه">Enter the payment plan. See what the unit really earns.</h1>
-  <p class="sub" data-ar="كل رقم بيتحسب لحظياً: الإيجار المتوقع من وحدات مماثلة، والعائد بعد التضخم وبالدولار، وإمتى فلوسك ترجع. اضغط على أي مصطلح عليه خط عشان تعرف معناه.">Every number updates as you type: expected rent from comparable listings, returns after inflation and in dollars, and when your money comes back. Tap any underlined term to see what it means.</p>
+  <p class="sub" data-ar="كل رقم بيتحسب وإنت بتكتب: الإيجار المتوقع من وحدات مماثلة، والعائد بعد التضخم وبالدولار، وإمتى فلوسك ترجع. اضغط على أي مصطلح عليه خط عشان تعرف معناه.">Every number updates as you type: expected rent from comparable listings, returns after inflation and in dollars, and when your money comes back. Tap any underlined term to see what it means.</p>
+  <p class="meta-line"><span data-ar="الفايدة والتضخم والدولار محدثين 21–23 أكتوبر 2026 · الإعلانات بيانات تجريبية ·">Rates, inflation and FX updated 21–23 Oct 2026 · listings are sample data ·</span> <button class="linkbtn" type="button" data-tab="method" data-ar="إزاي بنحسب">How we calculate</button></p>
 
   <div class="analyze">
-    <aside class="panel inputs" aria-label="Plan inputs" id="inputs"></aside>
+    <aside class="panel inputs" aria-label="Unit and plan" id="inputs"></aside>
 
-    <div style="display:grid;gap:16px;min-width:0">
-      <div class="toolbar" style="margin:0">
+    <div class="col">
+      <div class="toolbar no-print">
         <div class="seg" role="group" aria-label="Currency" id="curSeg">
-          <button aria-pressed="true" data-cur="EGP" data-ar="جنيه">EGP</button><button aria-pressed="false" data-cur="USD" data-ar="دولار">USD</button>
+          <button type="button" aria-pressed="true" data-cur="EGP" data-ar="جنيه">EGP</button><button type="button" aria-pressed="false" data-cur="USD" data-ar="دولار">USD</button>
         </div>
         <div class="seg" role="group" aria-label="Scenario" id="scnSeg">
-          <button aria-pressed="false" data-scn="low" data-ar="متشائم">Cautious</button><button aria-pressed="true" data-scn="base" data-ar="واقعي">Base</button><button aria-pressed="false" data-scn="high" data-ar="متفائل">Strong</button>
+          <button type="button" aria-pressed="false" data-scn="low" data-ar="متشائم">Cautious</button><button type="button" aria-pressed="true" data-scn="base" data-ar="واقعي">Base</button><button type="button" aria-pressed="false" data-scn="high" data-ar="متفائل">Strong</button>
         </div>
         <label class="field-inline" for="hold"><span data-ar="لو هبيع بعد">Sell after</span>
           <select id="hold" class="plain" style="width:auto"><option value="3" data-ar="3 سنين">3 years</option><option value="5" selected data-ar="5 سنين">5 years</option><option value="7" data-ar="7 سنين">7 years</option><option value="10" data-ar="10 سنين">10 years</option></select>
         </label>
       </div>
 
-      <div class="story" aria-live="polite"><h2 id="storyTitle"></h2><ol id="storyList"></ol></div>
+      <div class="story" id="story" aria-live="polite"><span class="badge" id="storyBadge"></span><h2 id="storyTitle"></h2><ol id="storyList"></ol><div class="note-cash" id="cashNote"></div></div>
+
+      <div class="panel no-print" id="actionsPanel">
+        <div class="actions">
+          <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.2Z"/></svg><span data-ar="ابعتلي التقرير على واتساب">Get this report on WhatsApp</span></a>
+          <button class="btn ghost" id="pdfBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span data-ar="تحميل PDF">Download PDF</span></button>
+          <button class="btn ghost" id="shareBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1m2 5a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span data-ar="انسخ لينك الوحدة">Copy link to this unit</span></button>
+        </div>
+        <div class="share-out mt" id="shareOut" hidden><input id="shareInput" readonly aria-label="Share link"><button class="btn ghost" type="button" id="shareCopy2" data-ar="نسخ">Copy</button></div>
+        <div class="consult">
+          <span data-ar="عايز حد يراجع الحسبة معاك؟ استشارة مجانية مع">Want someone to review the numbers with you? Free consultation with</span>
+          <b data-ar="هشام روديني">Hesham Rodiny</b>
+          <span class="num" style="user-select:all">011 45 72 1501</span>
+          <label class="field-inline" for="broker" style="margin-inline-start:auto"><span data-ar="بروكر؟ اسمك على التقرير">Broker? Your name on the report</span><input id="broker" style="border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;width:170px;background:var(--surface)"></label>
+        </div>
+      </div>
 
       <div class="panel">
         <div class="ph"><h2 data-ar="محطات فلوسك">Your money milestones</h2><p id="mlineNote"></p></div>
         <div class="mline" id="mline"></div><ol class="mlist" id="mlist"></ol>
       </div>
 
-      <div class="kpis" id="kpis"></div>
+      <div>
+        <div class="kpis" id="kpis"></div>
+        <div class="more-kpis"><button class="linkbtn" type="button" id="moreKpis"></button></div>
+      </div>
 
       <div class="panel">
         <div class="ph"><h2 data-ar="مركزك المالي سنة بسنة">Your position, year by year</h2><p data-ar="فوق الصفر = رجعلك كل اللي دفعته">Above zero = everything you paid is back</p></div>
@@ -319,20 +116,22 @@ footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--mute
         <div class="ph"><h2 data-ar="مقارنة بالبدائل">Against the alternatives</h2><p id="chartCur"></p></div>
         <div class="legend" id="altLegend"></div>
         <div class="chart-box" id="altChart" role="img" aria-label="Unit against certificate, gold and EGX30"></div>
-        <p class="note" data-ar="نمو كل مليون لو اتدفع كاش. الدهب وEGX30 بافتراضات قابلة للتعديل.">Growth of 1M if paid in cash. Gold and EGX30 use editable assumptions.</p>
+        <p class="note" id="altNote"></p>
       </div>
 
-      <div class="panel">
+      <div class="panel no-print">
         <div class="ph"><h2 data-ar="إيجارات وحدات مماثلة معروضة">Comparable rental listings</h2><p id="compHint"></p></div>
         <div class="scroll"><table class="t" id="compTable"></table></div>
-        <p class="note" data-ar="بيانات تجريبية مضبوطة على مستوى السوق حسب Knight Frank (الربع التاني 2026). في النسخة الحقيقية بتتحدث يومياً.">Sample listings calibrated to Knight Frank market levels (Q2 2026). Refreshed daily in the live version.</p>
+        <p class="note" data-ar="بيانات تجريبية مضبوطة على مستوى السوق حسب Knight Frank (الربع التاني 2026). الإيجار المستخدم هو الوسيط بعد خصم نسبة التفاوض.">Sample listings calibrated to Knight Frank market levels (Q2 2026). The rent used is the median after a negotiation discount.</p>
       </div>
 
-      <details class="panel">
+      <details class="panel" id="assumePanel">
         <summary data-ar="الافتراضات ومصادر الأرقام">Assumptions and sources</summary>
-        <div class="fg" id="assumeGrid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
+        <div class="fg" id="assumeGrid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div>
         <div class="scroll mt"><table class="t" id="srcTable"></table></div>
       </details>
+
+      <div class="print-only print-foot" id="printFoot"></div>
     </div>
   </div>
 </section>
@@ -341,12 +140,12 @@ footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--mute
 <section class="page" id="compare" hidden>
   <h1 data-ar="قارن وحدتين جنب بعض">Compare two units side by side</h1>
   <p class="sub" data-ar="الوحدة أ هي اللي في صفحة التحليل. غيّر الوحدة ب هنا، أو حمّل فرصة من الفرص المختارة.">Unit A is the one on the Analyze page. Edit Unit B here, or load one from Opportunities.</p>
-  <div class="units" id="unitCards"></div>
+  <div class="units mt" id="unitCards"></div>
   <div class="verdict"><div class="bar" id="vBar"></div><div><h2 id="vTitle"></h2><p id="vText"></p></div></div>
   <div class="grid2 mt">
     <div class="panel"><div class="ph"><h2 data-ar="المؤشرات">The numbers</h2></div>
       <div class="scroll"><table class="t"><thead><tr><th data-ar="المؤشر">Metric</th><th><span class="dot"></span> <span data-name="a"></span></th><th><span class="dot b"></span> <span data-name="b"></span></th></tr></thead><tbody id="cmpBody"></tbody></table></div></div>
-    <div class="panel"><div class="ph"><h2 data-ar="مركزك لو بعت">Position if sold</h2><p data-ar="بالجنيه">EGP</p></div>
+    <div class="panel"><div class="ph"><h2 data-ar="مركزك لو بعت">Position if sold</h2></div>
       <div class="legend" id="cmpLegend"></div><div class="chart-box" id="cmpChart" role="img" aria-label="Position if sold for both units"></div></div>
   </div>
 </section>
@@ -355,12 +154,12 @@ footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--mute
 <section class="page" id="market" hidden>
   <h1 data-ar="نبض السوق">Market pulse</h1>
   <p class="sub" data-ar="الأرقام اللي بتأثر على القرار، بتاريخها ومصدرها.">The figures that move the decision, each dated and sourced.</p>
-  <div class="tiles" id="tiles"></div>
+  <div class="tiles mt" id="tiles"></div>
   <div class="grid2">
     <div class="panel"><div class="ph"><h2 data-ar="أكبر 10 مطورين مبيعاً">Top 10 developers by sales</h2><p data-ar="النص الأول 2026 · مليار جنيه">H1 2026 · EGP bn</p></div>
       <div class="scroll"><table class="t" id="devTable"></table></div>
       <p class="note"><span data-ar="المصدر: The Board Consulting عبر">Source: The Board Consulting via</span> <a href="https://www.zawya.com/en/business/construction/top-10-egyptian-developers-sales-rise-to-13.26bln-in-h1-2026-460280" target="_blank" rel="noopener">Zawya</a></p></div>
-    <div style="display:grid;gap:16px;min-width:0">
+    <div class="col">
       <div class="panel"><div class="ph"><h2 data-ar="إيجار المتر للمكاتب حسب المنطقة">Office rent per m² by zone</h2><p data-ar="جنيه/م²/شهر · تجريبي">EGP/m²/month · sample</p></div><div class="chart-box" id="zoneChart" style="height:190px" role="img" aria-label="Office rent per m² by zone"></div></div>
       <div class="panel"><div class="ph"><h2 data-ar="العائد الحقيقي بعد التضخم">Real return after inflation</h2></div><table class="t" id="realTable"></table></div>
     </div>
@@ -371,535 +170,42 @@ footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--mute
 <section class="page" id="news" hidden>
   <h1 data-ar="أخبار تهم المستثمر">News that matters to investors</h1>
   <p class="sub" data-ar="اقتصاد وعقارات وشركات كبيرة من مصادر موثقة، ومع كل خبر سطر بيقول تأثيره عليك.">Economy, property and major-company news from established outlets, each with one line on what it means for you.</p>
-  <div class="chips" role="group" aria-label="Filter" id="newsFilter"></div>
+  <div class="chips mt" role="group" aria-label="Filter" id="newsFilter"></div>
   <div class="news" id="newsList"></div>
-  <p class="note" data-ar="متجمعة يوم 25 أكتوبر 2026. الملخصات بصياغتنا، والتفاصيل في المصدر. النسخة الحقيقية بتتحدث يومياً.">Collected 25 October 2026. Summaries are in our own words; details are at each source. Refreshed daily in the live version.</p>
+  <p class="note" data-ar="متجمعة يوم 29 أكتوبر 2026. الملخصات بصياغتنا، والتفاصيل في المصدر.">Collected 29 October 2026. Summaries are in our own words; details are at each source.</p>
 </section>
 
 <!-- ================= OPPORTUNITIES ================= -->
 <section class="page" id="opps" hidden>
   <h1 data-ar="فرص مختارة">Selected opportunities</h1>
   <p class="sub" data-ar="وحدات بتعدّي معايير واضحة. حلّل أي واحدة بنفس الأدوات.">Units that pass clear criteria. Analyze any of them with the same tools.</p>
-  <div class="chips"><span class="chip static" data-ar="استلام فوري أو خلال سنة">Ready or delivering within a year</span><span class="chip static" data-ar="مطوّر بسجل تسليم معروف">Developer with a delivery record</span><span class="chip static" data-ar="عائد أعلى من متوسط المنطقة">Yield above the zone median</span></div>
+  <div class="chips mt"><span class="chip static" data-ar="استلام فوري أو خلال سنة">Ready or delivering within a year</span><span class="chip static" data-ar="مطوّر بسجل تسليم معروف">Developer with a delivery record</span><span class="chip static" data-ar="عائد أعلى من متوسط المنطقة">Yield above the zone median</span></div>
   <div class="opps" id="oppList"></div>
-  <div class="disclose" data-ar="إفصاح: لو أي فرصة ليها علاقة تجارية بالمنصة (عمولة أو شراكة مع المطوّر) هيتكتب ده جنبها بوضوح.">Disclosure: if any listed opportunity has a commercial link to the platform (commission or developer partnership), it is stated next to it.</div>
+  <div class="disclose" data-ar="الفرص دي أمثلة توضيحية لحد ما نضيف وحدات حقيقية. محدش بيدفع عشان يظهر هنا، ولو أي فرصة ليها علاقة تجارية بالمنصة هيتكتب ده جنبها بوضوح.">These are illustrative examples until real units are added. No one pays to appear here, and any commercial link to the platform is stated next to the unit.</div>
+</section>
+
+<!-- ================= METHOD ================= -->
+<section class="page" id="method" hidden>
+  <h1 data-ar="إزاي بنحسب">How we calculate</h1>
+  <p class="sub" data-ar="كل رقم في AqarMath ليه معادلة ومصدر. هنا المعادلات والافتراضات اللي ممكن تعدّلها، واللي لسه مش عارفينه.">Every number in AqarMath has a formula and a source. Here are the formulas, the assumptions you can change, and what we do not know yet.</p>
+  <div class="method mt" id="methodBody"></div>
 </section>
 </main>
 
-<footer class="foot"><div class="wrap" style="display:grid;gap:6px"><span style="color:var(--ink2);font-weight:600" data-ar="AqarMath · أسسها هشام روديني">AqarMath · Founded by Hesham Rodiny</span><span data-ar="الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الإعلانات والفرص تجريبية؛ الفايدة والتضخم والدولار وأرقام السوق والأخبار حقيقية بمصادرها.">Estimates for illustration, not investment advice. Listings and opportunities are sample data; rates, inflation, FX, market figures and news are real and sourced.</span></div></footer>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span data-ar="الأرقام تقديرية للتوضيح وليست نصيحة استثمارية.">Estimates for illustration, not investment advice.</span>
+    <span><button class="linkbtn" type="button" data-tab="method" data-ar="إزاي بنحسب والإفصاح">How we calculate and disclosure</button></span>
+    <span><span data-ar="أسسها هشام روديني ·">Founded by Hesham Rodiny ·</span> <span class="phone num">011 45 72 1501</span></span>
+  </div>
+</footer>
+
+<button class="mbar" id="mbar" type="button" aria-label="Show result"></button>
+<nav class="bnav" id="bnav" aria-label="Pages"></nav>
 <div class="pop" id="pop" role="dialog" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>
-(function(){
-"use strict";
-/* ================= data ================= */
-const DESTS = [{id:'nc', en:'Fifth Settlement, New Cairo', ar:'التجمع الخامس', live:true},{id:'cap', en:'New Capital', ar:'العاصمة الإدارية'},{id:'zayed', en:'Sheikh Zayed', ar:'الشيخ زايد'},{id:'nco', en:'North Coast', ar:'الساحل الشمالي'}];
-const TYPES = [{id:'office', en:'Office', ar:'مكتب إداري', live:true},{id:'apt', en:'Apartment', ar:'شقة سكنية'},{id:'svc', en:'Serviced apartment', ar:'شقة فندقية'},{id:'villa', en:'Villa / townhouse', ar:'فيلا / تاون هاوس'},{id:'retail', en:'Retail shop', ar:'محل تجاري'},{id:'clinic', en:'Clinic', ar:'عيادة'}];
-const ZONES = [
-  {id:'s90', en:'South 90th St', ar:'التسعين الجنوبي', rent:{full:1500, semi:1050, core:750}},
-  {id:'n90', en:'North 90th St', ar:'التسعين الشمالي', rent:{full:1350, semi:950, core:680}},
-  {id:'bank', en:'Banking District', ar:'المنطقة البنكية', rent:{full:1450, semi:1000, core:720}},
-  {id:'d5', en:'Fifth District', ar:'الحي الخامس', rent:{full:1250, semi:880, core:620}}
-];
-const FIN = {full:{en:'Fitted',ar:'كامل التشطيب'}, semi:{en:'Semi-finished',ar:'نص تشطيب'}, core:{en:'Core & shell',ar:'Core & Shell'}};
-const FIN_COST = {full:0, semi:9000, core:16000}, LEASE_UP = {full:2, semi:5, core:8};
-const LISTINGS = [
-  ['s90','full',85,128000,'Property Finder',3],['s90','full',120,186000,'Aqarmap',6],['s90','full',200,292000,'Property Finder',9],['s90','semi',150,160000,'Bayut',4],['s90','core',300,228000,'Aqarmap',12],['s90','full',60,91000,'Bayut',2],
-  ['n90','full',100,136000,'Property Finder',5],['n90','semi',130,124000,'Aqarmap',8],['n90','full',75,100000,'Bayut',1],['n90','core',250,170000,'Property Finder',15],
-  ['bank','full',110,160000,'Aqarmap',2],['bank','full',90,131000,'Property Finder',7],['bank','semi',160,162000,'Bayut',10],['bank','core',400,290000,'Aqarmap',6],
-  ['d5','full',95,119000,'Property Finder',3],['d5','semi',120,106000,'Aqarmap',5],['d5','full',150,190000,'Bayut',11],['d5','core',220,137000,'Property Finder',4]
-];
-const DEVS = [['Talaat Moustafa Group','مجموعة طلعت مصطفى',219],['Palm Hills Developments','بالم هيلز',94],['Mountain View','ماونتن فيو',63.7],['Emaar Misr','إعمار مصر',60.9],['Hyde Park Developments','هايد بارك',52.9],['Tatweer Misr','تطوير مصر',50.5],['Madaar Ras El Hekma','مدار رأس الحكمة',44],['G Developments','جي ديفلوبمنتس',30],['Madinet Masr','مدينة مصر',28.4],['La Vista Developments','لافيستا',26.5]];
-const NEWS = [
-  {d:'2026-10-13', c:'economy', src:'Zawya', url:'https://www.zawya.com/en/economy/imf-lifts-egypts-growth-outlook-for-fy202627-to-4.7-1610116',
-   en:['IMF raises Egypt growth forecast for FY2026/27 to 4.7%','The October World Economic Outlook lifts the forecast from 4.4% in July and sees inflation averaging 14.8% by June 2027.','Faster growth supports office demand, but inflation stays high, so judge returns after inflation.'],
-   ar:['صندوق النقد يرفع توقع نمو مصر لعام 2026/27 إلى 4.7%','تقرير آفاق الاقتصاد العالمي لشهر أكتوبر رفع التوقع من 4.4% في يوليو، ويتوقع تضخم حوالي 14.8% بحلول يونيو 2027.','نمو أعلى بيدعم الطلب على المكاتب، لكن التضخم لسه عالي، فاحكم على العائد بعد التضخم.']},
-  {d:'2026-10-10', c:'economy', src:'Daily News Egypt', url:'https://www.dailynewsegypt.com/2026/10/10/egypts-annual-urban-inflation-eases-to-13-9-in-september/',
-   en:['Urban inflation eases to 13.9% in September','Annual urban headline inflation fell from 14.5% in August, a seven-month low.','At a 19% certificate rate, the real return on cash in the bank is about 4.5% a year.'],
-   ar:['التضخم في الحضر يتراجع لـ13.9% في سبتمبر','التضخم السنوي نزل من 14.5% في أغسطس، وده أقل مستوى في 7 شهور.','مع شهادة بـ19%، العائد الحقيقي للفلوس في البنك حوالي 4.5% في السنة.']},
-  {d:'2026-09-24', c:'policy', src:'Egypt Today', url:'https://www.egypttoday.com/Article/3/149692/CBE-holds-interest-rates-steady-keeps-deposit-rate-at-19',
-   en:['Central Bank holds the deposit rate at 19%','The overnight deposit rate stays at 19% and the lending rate at 20%, a sixth hold in a row, citing the inflation outlook.','This is the benchmark used to value installment plans and to compare against certificates.'],
-   ar:['البنك المركزي يثبّت فايدة الإيداع عند 19%','عائد الإيداع لليلة واحدة فضل 19% والإقراض 20%، للمرة السادسة على التوالي، بسبب توقعات التضخم.','ده الرقم اللي بنقيّم بيه خطط التقسيط وبنقارن بيه بالشهادات.']},
-  {d:'2026-08-19', c:'companies', src:'Zawya', url:'https://www.zawya.com/en/business/construction/top-10-egyptian-developers-sales-rise-to-13.26bln-in-h1-2026-460280',
-   en:['Top 10 developers sell about EGP 670bn in H1 2026','The Board Consulting ranking puts combined sales at about $13.26bn. Talaat Moustafa leads with about EGP 219bn, then Palm Hills at EGP 94bn.','Sales are concentrating in large developers, which matters for delivery risk.'],
-   ar:['أكبر 10 مطورين باعوا بحوالي 670 مليار جنيه في النص الأول 2026','ترتيب The Board Consulting بيقدّر المبيعات بحوالي 13.26 مليار دولار. طلعت مصطفى الأول بحوالي 219 مليار، وبعدها بالم هيلز بـ94 مليار.','المبيعات بتتركز عند المطورين الكبار، وده مهم لمخاطر التسليم.']},
-  {d:'', p:{en:'H1 2026 results', ar:'نتائج النص الأول 2026'}, c:'companies', src:'Zawya', url:'https://www.zawya.com/en/capital-markets/equities/egypt-tmg-holding-achieves-44bln-sales-in-h1-2026-ynofpsfj',
-   en:['TMG Holding books EGP 219.1bn in H1 2026 sales','Up from EGP 211bn a year earlier. SouthMed on the North Coast brought about EGP 94bn; The Spine, launched in May, about EGP 34bn.','Big launches still absorb most demand, and their prices set the reference.'],
-   ar:['TMG القابضة تحقق مبيعات 219.1 مليار جنيه في النص الأول 2026','مقابل 211 مليار في نفس الفترة السنة اللي فاتت. ساوث ميد جابت حوالي 94 مليار، و The Spine اللي اتطلق في مايو حوالي 34 مليار.','الإطلاقات الكبيرة لسه واخدة أغلب الطلب، وأسعارها هي المرجع.']},
-  {d:'2026-07-08', c:'realestate', src:'EnterpriseAM', url:'https://enterpriseam.com/egypt/2026/07/08/cairo-office-rents-jump-20-as-demand-outpaces-supply-of-grade-a-space/',
-   en:['Cairo office rents up 20% a year in EGP terms','Knight Frank\'s Q2 2026 review puts New Cairo Grade A business parks at about $348/m² a year, with mid-market office sale prices of EGP 182–184k/m².','These are the market levels this prototype\'s sample listings are calibrated to.'],
-   ar:['إيجارات المكاتب في القاهرة زادت 20% في سنة بالجنيه','تقرير Knight Frank للربع التاني 2026: مكاتب Grade A في بيزنس باركات التجمع حوالي 348 دولار للمتر في السنة، وأسعار بيع المكاتب المتوسطة 182–184 ألف جنيه للمتر.','دي مستويات السوق اللي الإعلانات التجريبية متظبطة عليها.']},
-  {d:'2026-05-31', c:'realestate', src:'Daily News Egypt', url:'https://www.dailynewsegypt.com/2026/05/31/egypts-top-developers-post-egp-271bn-in-sales-as-real-estate-market-enters-correction-phase/',
-   en:['Q1 sales of top developers dip 6.5% as the market corrects','Contracted sales reached about EGP 271bn versus EGP 290bn a year earlier. Smaller developers face tighter liquidity and more selective buyers.','More room to negotiate, and more reason to check the developer.'],
-   ar:['مبيعات كبار المطورين في الربع الأول تقل 6.5% مع تصحيح السوق','المبيعات التعاقدية حوالي 271 مليار جنيه مقابل 290 مليار السنة اللي فاتت، والمطورين الصغيرين بيواجهوا سيولة أقل ومشترين أكثر انتقائية.','مساحة أكبر للتفاوض، وسبب أكتر إنك تتأكد من المطوّر.']},
-  {d:'2026-05-13', c:'realestate', src:'EnterpriseAM', url:'https://enterpriseam.com/egypt/hardhats/cairos-rental-market-running-double-digit-increase-while-sales-stall/',
-   en:['New Cairo rents rise 10% while resale prices rise 3.1%','JLL\'s Q1 2026 data shows asking rents growing much faster than secondary-market prices in New Cairo.','Rising rents with flat prices push yields up; this is the basis for the 10% rent-growth default.'],
-   ar:['الإيجارات في التجمع تزيد 10% وأسعار إعادة البيع 3.1% بس','بيانات JLL للربع الأول 2026 بتبيّن إن الإيجارات بتزيد أسرع بكتير من أسعار إعادة البيع في التجمع.','إيجار بيزيد مع سعر ثابت يعني عائد أعلى، ودي أساس افتراض زيادة الإيجار 10%.']}
-];
-const CATS = {all:{en:'All',ar:'الكل'}, economy:{en:'Economy',ar:'اقتصاد'}, policy:{en:'Rates & policy',ar:'فايدة وسياسات'}, realestate:{en:'Real estate',ar:'عقارات'}, companies:{en:'Companies',ar:'شركات'}};
-const OPPS = [
-  {en:'Fitted office', ar:'مكتب كامل التشطيب', zone:'s90', finish:'full', area:90, price:16200000, down:100, years:0, delm:0, dev:'big', maint:0},
-  {en:'Semi-finished office', ar:'مكتب نص تشطيب', zone:'bank', finish:'semi', area:140, price:18900000, down:30, years:4, delm:0, dev:'big', maint:8},
-  {en:'Fitted office', ar:'مكتب كامل التشطيب', zone:'d5', finish:'full', area:70, price:11900000, down:10, years:6, delm:12, dev:'mid', maint:8},
-  {en:'Fitted office', ar:'مكتب كامل التشطيب', zone:'n90', finish:'full', area:120, price:20400000, down:100, years:0, delm:0, dev:'big', maint:0}
-];
-const SCN = {low:{pg:.04, rf:.9}, base:{pg:.10, rf:1}, high:{pg:.16, rf:1.1}};
-const GL = {
-  irr:{en:['IRR (internal rate of return)','The single yearly return that accounts for when every payment goes out and every rent comes in. It is the fairest way to compare a cash unit with an installment unit.','NPV of all cash flows = 0 → solve for the rate'], ar:['IRR (معدل العائد الداخلي)','نسبة العائد السنوي الواحدة اللي بتاخد في حسابها ميعاد كل قسط بتدفعه وكل إيجار بيدخلك. دي أعدل طريقة تقارن بيها وحدة كاش بوحدة تقسيط.','النسبة اللي تخلي صافي القيمة الحالية لكل التدفقات = صفر']},
-  roi:{en:['ROI (return on investment)','Total profit over the whole holding period, as a share of everything you paid. It does not care how long it took.','(rent received + net sale − money paid) ÷ money paid'], ar:['ROI (العائد على الاستثمار)','إجمالي الربح على مدة الاحتفاظ كلها كنسبة من كل اللي دفعته، من غير ما يفرق معاه المدة قد إيه.','(الإيجار + صافي البيع − المدفوع) ÷ المدفوع']},
-  npv:{en:['NPV (net present value)','All future money in and out, brought back to today\'s value using the certificate rate. Above zero means the unit beats putting the same money in a certificate.','Σ cash flow ÷ (1 + rate)^time'], ar:['NPV (صافي القيمة الحالية)','كل الفلوس اللي هتدخل وتطلع في المستقبل محسوبة بقيمتها النهارده بفايدة الشهادة. فوق الصفر معناه إن الوحدة أحسن من إنك تحط نفس الفلوس في شهادة.','مجموع (التدفق ÷ (1 + الفايدة)^الزمن)']},
-  cap:{en:['Cap rate','Net yearly rent divided by what the unit is worth on the market today. Investors use it to value rented property and compare areas.','NOI ÷ market value'], ar:['Cap Rate (معدل الرسملة)','صافي الإيجار السنوي مقسوم على قيمة الوحدة في السوق النهارده. المستثمرين بيستخدموه لتقييم الوحدات المؤجرة والمقارنة بين المناطق.','صافي الدخل ÷ القيمة السوقية']},
-  grm:{en:['Rent multiple (GRM)','How many years of gross rent equal the price. Lower is cheaper relative to its rent.','price ÷ yearly rent'], ar:['مضاعف الإيجار (GRM)','كام سنة إيجار إجمالي تساوي سعر الوحدة. الأقل معناه إن الوحدة أرخص بالنسبة لإيجارها.','السعر ÷ الإيجار السنوي']},
-  gross:{en:['Gross yield','Yearly rent before any cost, as a share of the price.','yearly rent ÷ price'], ar:['العائد الإجمالي','الإيجار السنوي قبل أي مصاريف كنسبة من السعر.','الإيجار السنوي ÷ السعر']},
-  nety:{en:['Net yield','Yearly rent after vacancy, owner costs and property tax, as a share of the all-in cost (price + maintenance + finishing).','NOI ÷ all-in cost'], ar:['العائد الصافي','الإيجار السنوي بعد الشغور ومصاريف المالك والضريبة العقارية، كنسبة من التكلفة الكاملة (السعر + الصيانة + التشطيب).','صافي الدخل ÷ التكلفة الكاملة']},
-  noi:{en:['NOI (net operating income)','Rent minus vacancy, owner service costs and property tax. What actually reaches you each year.','rent − vacancy − costs − tax'], ar:['صافي دخل التشغيل','الإيجار ناقص الشغور ومصاريف المالك والضريبة العقارية. ده اللي بيوصلك فعلاً كل سنة.','الإيجار − الشغور − المصاريف − الضريبة']},
-  multiple:{en:['Equity multiple','How many pounds come back for every pound you put in, counting rent and the sale.','(rent + net sale) ÷ money paid'], ar:['مضاعف رأس المال','كل جنيه دفعته رجعلك كام جنيه، بالإيجار والبيع.','(الإيجار + صافي البيع) ÷ المدفوع']},
-  payback:{en:['Cash payback','When the rent you have collected equals everything you paid, without selling.','first month where Σ net rent ≥ Σ payments'], ar:['استرداد الكاش','إمتى الإيجار اللي جمعته يساوي كل اللي دفعته، من غير ما تبيع.','أول شهر مجموع الإيجار الصافي فيه ≥ مجموع المدفوع']},
-  salebe:{en:['Break-even if sold','The first point where selling would give you back everything you paid, after commission and paying off the remaining installments.','Σ rent + (value × (1 − commission) − remaining installments) ≥ Σ paid'], ar:['التعادل لو بعت','أول وقت لو بعت فيه هترجع كل اللي دفعته، بعد العمولة وسداد الأقساط الباقية.','الإيجار المتجمع + (القيمة × (1 − العمولة) − الأقساط الباقية) ≥ المدفوع']},
-  coverage:{en:['Installment coverage','Net rent in a year divided by the installments due that year. At 100% or more, the unit pays its own installments.','net rent ÷ installments that year'], ar:['تغطية القسط','الإيجار الصافي في السنة مقسوم على أقساط نفس السنة. من 100% وطالع، الوحدة بتدفع أقساطها بنفسها.','الإيجار الصافي ÷ أقساط السنة']},
-  real:{en:['Real return','Your return after removing inflation. It shows whether your purchasing power actually grew.','(1 + return) ÷ (1 + inflation) − 1'], ar:['العائد الحقيقي','عائدك بعد خصم التضخم. بيوضح هل قدرتك الشرائية زادت فعلاً.','(1 + العائد) ÷ (1 + التضخم) − 1']},
-  usd:{en:['Return in USD','Your return measured in dollars, after the expected decline of the pound.','(1 + return) ÷ (1 + EGP decline) − 1'], ar:['العائد بالدولار','عائدك محسوب بالدولار، بعد التراجع المتوقع للجنيه.','(1 + العائد) ÷ (1 + تراجع الجنيه) − 1']},
-  pv:{en:['Plan value today','What the installment plan is worth in today\'s money at the certificate rate. The gap to the price is the hidden discount of paying later.','down payment + Σ installment ÷ (1 + rate)^time'], ar:['قيمة الخطة النهارده','خطة التقسيط تسوى كام بفلوس النهارده بفايدة الشهادة. الفرق بينها وبين السعر هو الخصم المخفي إنك تدفع متأخر.','المقدم + مجموع (القسط ÷ (1 + الفايدة)^الزمن)']},
-  score:{en:['Investment score','A 0–100 summary: yield against the zone (40), delivery timing (30), developer track record (20), real return (10).',''], ar:['درجة الاستثمار','ملخص من 0 لـ100: العائد مقارنة بالمنطقة (40)، ميعاد الاستلام (30)، سجل المطوّر (20)، العائد الحقيقي (10).','']},
-  grow:{en:['Break-even price growth','The yearly price growth the unit needs to match a bank certificate over your holding period.','growth where NPV at certificate rate = 0'], ar:['نمو السعر اللازم','نسبة الزيادة السنوية في سعر الوحدة اللي محتاجها عشان تكسب زي الشهادة على مدة الاحتفاظ.','النمو اللي يخلي NPV بفايدة الشهادة = صفر']}
-};
-
-/* ================= state ================= */
-const today = new Date();
-const base = {name:'', type:'office', zone:'s90', finish:'full', area:100, price:18000000, disc:0, down:100, dp2:0, dp2m:3, years:0, freq:4, delm:0, delpay:0, maint:0, maintb:6, fin:null, lease:null, mv:0, dev:'big'};
-const S = {
-  lang:'en', cur:'EGP', scn:'base', hold:5, tab:'analyze', news:'all', dest:'nc',
-  contract: today.toISOString().slice(0,10),
-  A: {bank:19, inf:13.9, fx:54.58, dep:8, gold:15, egx:18, rentG:10, vac:5, svc:5, tax:true, saleFee:2.5},
-  U: {a:{...base, zone:'d5', finish:'semi', area:120, price:16800000, down:10, years:6, freq:4, delm:12, maint:8, dev:'mid'},
-      b:{...base}}
-};
-try { const l = localStorage.getItem('lang'); if (l==='ar'||l==='en') S.lang = l; } catch(e){}
-
-/* ================= helpers ================= */
-const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const ar = () => S.lang === 'ar', tx = (e,a) => ar() ? a : e;
-const zoneName = id => { const z = ZONES.find(z => z.id===id); return ar()?z.ar:z.en; };
-const unitName = k => S.U[k].name || tx(k==='a'?'Unit A':'Unit B', k==='a'?'الوحدة أ':'الوحدة ب');
-const fmt = (n,d=0) => Number(n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
-const pct = (n,d=1) => isFinite(n) ? fmt(n*100,d)+'%' : '—';
-function compact(n){ const a=Math.abs(n); if(a>=1e9) return fmt(n/1e9,2)+tx('B',' مليار'); if(a>=1e6) return fmt(n/1e6,2)+tx('M',' مليون'); if(a>=1e4) return fmt(n/1e3,0)+tx('K',' ألف'); return fmt(n,0); }
-const fxAt = m => S.A.fx*Math.pow(1+S.A.dep/100, m/12);
-const money = (egp,m=0) => S.cur==='USD' ? '$'+compact(egp/fxAt(m)) : (ar() ? compact(egp)+' ج' : 'EGP '+compact(egp));
-const egp = v => ar() ? compact(v)+' ج' : 'EGP '+compact(v);
-const full = v => ar() ? fmt(v)+' ج' : 'EGP '+fmt(v);
-function addMonths(iso,m){ const d=new Date(iso+'T00:00:00'), day=d.getDate(); d.setMonth(d.getMonth()+m); if(d.getDate()!==day) d.setDate(0); return d; }
-const dstr = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-const dateAt = m => dstr(addMonths(S.contract, m));
-const monthY = m => addMonths(S.contract, m).toLocaleDateString(ar()?'ar-EG-u-nu-latn':'en-GB',{month:'short',year:'numeric'});
-const yrs = m => fmt(m/12,1)+tx(' years',' سنة');
-const T = (key, label) => `<button type="button" class="term" data-term="${key}">${label ?? GL[key][S.lang][0]}</button>`;
-
-/* ================= engine ================= */
-function bisect(f,lo,hi){ let flo=f(lo); if(!isFinite(flo)||flo*f(hi)>0) return NaN; for(let i=0;i<120;i++){ const m=(lo+hi)/2, fm=f(m); if(flo*fm<=0) hi=m; else {lo=m; flo=fm;} } return (lo+hi)/2; }
-const npvM = (cf,rm) => { let s=0, df=1; for(let i=0;i<cf.length;i++){ s+=cf[i]/df; df*=1+rm; } return s; };
-function compute(u, H, pgOverride){
-  const A=S.A, sc=SCN[S.scn], pg=pgOverride ?? sc.pg, MAXM=12*30, HM=12*H;
-  const net=u.price*(1-u.disc/100), plan=[];
-  const dp=net*u.down/100; if(dp>0.5) plan.push({m:0,k:'dp',amt:dp});
-  const dp2=net*u.dp2/100; if(dp2>0.5) plan.push({m:Math.max(1,u.dp2m),k:'dp2',amt:dp2});
-  const delAmt=net*u.delpay/100; if(delAmt>0.5) plan.push({m:u.delm,k:'del',amt:delAmt});
-  const rem=net-dp-dp2-delAmt, n=Math.round(u.years*u.freq), step=12/u.freq; let inst=0;
-  if(rem>0.5){ if(n>0){ inst=rem/n; for(let k=1;k<=n;k++) plan.push({m:Math.round(k*step),k:'inst',i:k,amt:inst}); } else plan.push({m:0,k:'bal',amt:rem}); }
-  const maintAmt=net*u.maint/100, maintM=Math.max(0,u.delm-u.maintb); if(maintAmt>0.5) plan.push({m:maintM,k:'maint',amt:maintAmt});
-  plan.sort((x,y)=>x.m-y.m||(x.k==='maint')-(y.k==='maint'));
-  const finCost=(u.fin ?? FIN_COST[u.finish])*u.area, leaseM=u.lease ?? LEASE_UP[u.finish];
-  const z=ZONES.find(z=>z.id===u.zone), rentM2=z.rent[u.finish]*sc.rf;
-  const opex=A.vac/100+A.svc/100+(A.tax?0.10*(1-0.32):0);
-  const rentStart=u.delm+leaseM, mv0=u.mv>0?u.mv:net, value=m=>mv0*Math.pow(1+pg,m/12);
-  const out=new Float64Array(MAXM+1), rentN=new Float64Array(MAXM+1), planPay=new Float64Array(MAXM+1);
-  plan.forEach(p=>{ if(p.m<=MAXM){ out[p.m]+=p.amt; if(p.k!=='maint') planPay[p.m]+=p.amt; } });
-  if(finCost>0) out[u.delm]+=finCost;
-  const gross=m=>u.area*rentM2*Math.pow(1+A.rentG/100, Math.floor((m-rentStart-1)/12));
-  for(let m=rentStart+1;m<=MAXM;m++) rentN[m]=gross(m)*(1-opex);
-  if(rentStart+1<=MAXM) out[rentStart+1]+=gross(rentStart+1);
-  const cf=new Float64Array(MAXM+1), cum=new Float64Array(MAXM+1);
-  for(let m=0;m<=MAXM;m++){ cf[m]=rentN[m]-out[m]; cum[m]=(m?cum[m-1]:0)+cf[m]; }
-  const unpaidAfter=m=>plan.reduce((s,p)=>s+(p.m>m?p.amt:0),0);
-  const saleNet=m=>value(m)*(1-A.saleFee/100)-unpaidAfter(m);
-  const cfH=Array.from(cf.slice(0,HM+1)); cfH[HM]+=saleNet(HM);
-  const irrM=bisect(r=>npvM(cfH,r),-0.5,0.5), irr=Math.pow(1+irrM,12)-1;
-  const bankM=Math.pow(1+A.bank/100,1/12)-1, npv=npvM(cfH,bankM);
-  let outH=0, rentH=0; for(let m=0;m<=HM;m++){ outH+=out[m]; rentH+=rentN[m]; }
-  const profit=cfH.reduce((s,x)=>s+x,0), roi=outH?profit/outH:NaN, multiple=outH?(rentH+saleNet(HM))/outH:NaN;
-  const pvPlan=plan.filter(p=>p.k!=='maint').reduce((s,p)=>s+p.amt/Math.pow(1+bankM,p.m),0), effDisc=net?1-pvPlan/net:0;
-  const g1=u.area*rentM2*12, noi1=g1*(1-opex), allIn=net+maintAmt+finCost;
-  let paybackM=-1, saleBeM=-1;
-  for(let m=1;m<=MAXM;m++){ if(paybackM<0&&cum[m]>=0) paybackM=m; if(saleBeM<0&&cum[m]+saleNet(m)>=0) saleBeM=m; if(paybackM>=0&&saleBeM>=0) break; }
-  const lastPlan=plan.length?Math.max(...plan.map(p=>p.m)):0;
-  const Y=Math.min(15,Math.max(H,Math.ceil(lastPlan/12),Math.ceil((rentStart+1)/12)+1));
-  const years=[]; let coverY=-1;
-  for(let y=1;y<=Y;y++){ const m0=y===1?0:12*(y-1)+1, m1=12*y; let paid=0,rent=0,ins=0; for(let m=m0;m<=m1;m++){ paid+=out[m]; rent+=rentN[m]; ins+=planPay[m]; }
-    const cov=ins>0?rent/ins:NaN; if(coverY<0&&ins>0&&rent>=ins) coverY=y;
-    years.push({y,paid,rent,netY:rent-paid,cum:cum[m1],val:value(m1),pos:cum[m1]+saleNet(m1),ins,cov}); }
-  const beGrowth=bisect(g=>{ const c=Array.from(cf.slice(0,HM+1)); c[HM]+=mv0*Math.pow(1+g,H)*(1-A.saleFee/100)-unpaidAfter(HM); return npvM(c,bankM); },-0.6,1.5);
-  const line=[]; let cr=0; for(let t=0;t<=H;t++){ if(t){ for(let m=12*(t-1)+1;m<=12*t;m++) cr+=(m>leaseM?u.area*rentM2*Math.pow(1+A.rentG/100,Math.floor((m-leaseM-1)/12))*(1-opex):0); } line.push(1e6*(value(12*t)+cr)/(mv0||1)); }
-  const ys=Math.max(0,Math.min(40,40*rentM2/(z.rent.full*sc.rf))), ds=u.delm<=0?30:u.delm<=12?20:u.delm<=24?12:6, vs={big:20,mid:12,new:5}[u.dev]??10;
-  const real=(1+irr)/(1+A.inf/100)-1, score=Math.round(ys+ds+vs+Math.max(0,Math.min(10,real*100)));
-  let totalPlan=0; plan.forEach(p=>totalPlan+=p.amt);
-  return {net,dp,inst,n,plan,maintAmt,maintM,finCost,rentStart,rentM2,rentMonth:g1/12,g1,noi1,gross:g1/net,netY:noi1/allIn,cap:noi1/mv0,grm:net/g1,
-    saleH:value(HM),saleNetH:saleNet(HM),roi,multiple,irr,real,usd:(1+irr)/(1+A.dep/100)-1,npv,pvPlan,effDisc,paybackM,saleBeM,coverY,lastPlan,beGrowth,
-    years,cum,saleNet,line,score,ppm:net/u.area,mv0,outH,totalPlan,allIn};
-}
-
-/* ================= line chart ================= */
-const NS='http://www.w3.org/2000/svg';
-function niceTicks(min,max,n=4){ if(min===max){min-=1;max+=1;} const s0=(max-min)/n, mag=Math.pow(10,Math.floor(Math.log10(s0))), step=[1,2,2.5,5,10].map(x=>x*mag).find(x=>x>=s0); const o=[]; for(let v=Math.floor(min/step)*step; v<=Math.ceil(max/step)*step+step/2; v+=step) o.push(+v.toFixed(10)); return o; }
-function lineChart(box,{labels,series,zero}){
-  const W=box.clientWidth||600, H=box.clientHeight||300, rtl=ar(), padT=10, padB=28, pa=58, po=24, padR=rtl?pa:po, padL=rtl?po:pa;
-  const pw=W-padR-padL, ph=H-padT-padB, n=labels.length, all=series.flatMap(s=>s.values).concat(zero?[0]:[]);
-  const ticks=niceTicks(Math.min(...all),Math.max(...all)), y0=ticks[0], y1=ticks.at(-1), big=Math.max(Math.abs(y0),Math.abs(y1))>=1e6;
-  const div=big?1e6:1e3, tk=v=>fmt(v/div, big&&(y1-y0)/div<5?2:0);
-  const X=i=>rtl?W-padR-(n===1?0:i/(n-1)*pw):padL+(n===1?0:i/(n-1)*pw), Y=v=>padT+ph-(v-y0)/(y1-y0)*ph;
-  let svg=`<svg xmlns="${NS}" viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
-  ticks.forEach(t=>{ svg+=`<line x1="${padL}" x2="${W-padR}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)"/>`; svg+=rtl?`<text x="${W-padR+8}" y="${Y(t)+4}" text-anchor="start">${tk(t)}</text>`:`<text x="${padL-8}" y="${Y(t)+4}" text-anchor="end">${tk(t)}</text>`; });
-  if(zero&&y0<0) svg+=`<line x1="${padL}" x2="${W-padR}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--ink2)" stroke-width="1.25"/>`;
-  svg+=`<line x1="${padL}" x2="${W-padR}" y1="${padT+ph}" y2="${padT+ph}" stroke="var(--axis)"/>`;
-  const every=Math.ceil(n/(W<420?4:8)); labels.forEach((l,i)=>{ if(i%every===0||i===n-1) svg+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle">${l}</text>`; });
-  [...series].sort((a,b)=>(a.bold?1:0)-(b.bold?1:0)).forEach(s=>{ const d=s.values.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(''); svg+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.bold?2.5:2}" stroke-linejoin="round" stroke-linecap="round"/>`; });
-  svg+=`<line class="cross" x1="0" x2="0" y1="${padT}" y2="${padT+ph}" stroke="var(--muted)" stroke-dasharray="3 3" opacity="0"/>`;
-  series.forEach((s,k)=>svg+=`<circle class="hd" data-k="${k}" r="4.5" fill="${s.color}" stroke="var(--surface)" stroke-width="2" opacity="0"/>`);
-  svg+=`<rect x="${padL}" y="${padT}" width="${pw}" height="${ph}" fill="transparent"/></svg><div class="tip"></div>`;
-  box.innerHTML=svg;
-  const el=box.querySelector('svg'), tip=box.querySelector('.tip'), cross=el.querySelector('.cross');
-  const hide=()=>{ tip.style.opacity=0; cross.setAttribute('opacity',0); el.querySelectorAll('.hd').forEach(c=>c.setAttribute('opacity',0)); };
-  const show=ev=>{ const r=el.getBoundingClientRect(), px=(ev.clientX-r.left)*(W/r.width); let i=Math.round((rtl?(W-padR-px):(px-padL))/pw*(n-1)); i=Math.max(0,Math.min(n-1,i));
-    cross.setAttribute('x1',X(i)); cross.setAttribute('x2',X(i)); cross.setAttribute('opacity',1);
-    el.querySelectorAll('.hd').forEach(c=>{ const v=series[+c.dataset.k].values[i]; c.setAttribute('cx',X(i)); c.setAttribute('cy',Y(v)); c.setAttribute('opacity',1); });
-    tip.innerHTML=`<b>${labels[i]}</b>`+[...series].sort((a,b)=>b.values[i]-a.values[i]).map(s=>`<div><i style="background:${s.color}"></i>${s.label}: <span class="num">${s.fmt(s.values[i])}</span></div>`).join('');
-    tip.style.opacity=1; const left=X(i)/W*r.width, tw=tip.offsetWidth; tip.style.left=Math.max(0,Math.min(r.width-tw,left<r.width/2?left+12:left-tw-12))+'px'; tip.style.top='8px'; };
-  el.addEventListener('pointermove',show); el.addEventListener('pointerdown',show); el.addEventListener('pointerleave',hide);
-  return big?tx('millions','بالمليون'):tx('thousands','بالألف');
-}
-
-/* ================= inputs ================= */
-const opt = (v,l,cur,dis) => `<option value="${v}"${String(v)===String(cur)?' selected':''}${dis?' disabled':''}>${l}</option>`;
-const sel = (id,opts,val) => `<select id="${id}">${opts.map(o=>opt(o[0],o[1],val,o[2])).join('')}</select>`;
-const fld = (id,label,ctrl,hint,wide) => `<div class="f${wide?' wide':''}"><label for="${id}">${label}</label>${ctrl}${hint?`<span class="hint">${hint}</span>`:''}</div>`;
-const num = (id,v,step=1,min=0,max='') => `<input type="number" id="${id}" value="${v}" step="${step}" min="${min}" ${max!==''?`max="${max}"`:''} inputmode="decimal">`;
-const ZO=()=>ZONES.map(z=>[z.id,ar()?z.ar:z.en]), FO=()=>Object.keys(FIN).map(k=>[k,FIN[k][S.lang]]);
-const DO=()=>[[0,tx('Ready now','فوري')],[12,tx('In 1 year','بعد سنة')],[24,tx('In 2 years','بعد سنتين')],[36,tx('In 3 years','بعد 3 سنين')],[48,tx('In 4 years','بعد 4 سنين')]];
-const VO=()=>[['big',tx('Major developer','مطوّر كبير')],['mid',tx('Mid-size','متوسط')],['new',tx('New / unknown','جديد / غير معروف')]];
-const QO=()=>[[12,tx('Monthly','شهري')],[4,tx('Quarterly','ربع سنوي')],[2,tx('Semi-annual','نص سنوي')],[1,tx('Annual','سنوي')]];
-const TO=()=>TYPES.map(t=>[t.id,(ar()?t.ar:t.en)+(t.live?'':tx(' (soon)',' (قريباً)')),!t.live]);
-let moreOpen=false;
-function buildInputs(){
-  const u=S.U.a, p=id=>`u-a-${id}`;
-  $('#inputs').innerHTML = `
-  <div class="group"><h3>${tx('The unit','الوحدة')}</h3><div class="fg">
-    ${fld(p('name'),tx('Name (optional)','الاسم (اختياري)'),`<input id="${p('name')}" value="${u.name}" placeholder="${unitName('a')}">`,'',true)}
-    ${fld(p('type'),tx('Type','النوع'),sel(p('type'),TO(),u.type),tx('Offices first; other types as data arrives','المكاتب الأول، وباقي الأنواع مع وصول البيانات'),true)}
-    ${fld(p('zone'),tx('Zone','المنطقة'),sel(p('zone'),ZO(),u.zone))}
-    ${fld(p('finish'),tx('Finishing','التشطيب'),sel(p('finish'),FO(),u.finish))}
-    ${fld(p('area'),tx('Area (m²)','المساحة (م²)'),num(p('area'),u.area,1,10))}
-    ${fld(p('dev'),tx('Developer','المطوّر'),sel(p('dev'),VO(),u.dev))}
-  </div></div>
-  <div class="group"><h3>${tx('Price and payment plan','السعر وخطة السداد')}</h3><div class="fg">
-    ${fld(p('price'),tx('List price (EGP)','سعر الوحدة (جنيه)'),num(p('price'),u.price,50000),'',true)}
-    ${fld(p('disc'),tx('Discount %','الخصم %'),num(p('disc'),u.disc,0.25,0,50))}
-    ${fld(p('down'),tx('Down payment %','المقدم %'),num(p('down'),u.down,1,0,100))}
-    ${fld(p('years'),tx('Installment years','سنين التقسيط'),num(p('years'),u.years,1,0,12))}
-    ${fld(p('freq'),tx('Paid','طريقة الدفع'),sel(p('freq'),QO(),u.freq))}
-    ${fld(p('delm'),tx('Delivery','الاستلام'),sel(p('delm'),DO(),u.delm))}
-    ${fld(p('maint'),tx('Maintenance %','الصيانة %'),num(p('maint'),u.maint,0.5,0,20),tx('From the contract','من العقد'))}
-  </div></div>
-  <details class="group more"${moreOpen?' open':''}><summary>${tx('More plan details','تفاصيل أكتر للخطة')}</summary><div class="fg" style="margin-top:10px">
-    ${fld(p('dp2'),tx('2nd down payment %','مقدم تاني %'),num(p('dp2'),u.dp2,1,0,50))}
-    ${fld(p('dp2m'),tx('…after (months)','…بعد (شهور)'),num(p('dp2m'),u.dp2m,1,1,24))}
-    ${fld(p('delpay'),tx('At delivery %','دفعة الاستلام %'),num(p('delpay'),u.delpay,1,0,50))}
-    ${fld(p('maintb'),tx('Maintenance before delivery (mo)','الصيانة قبل الاستلام بـ (شهور)'),num(p('maintb'),u.maintb,1,0,24))}
-    ${fld('contract',tx('Contract date','تاريخ التعاقد'),`<input type="date" id="contract" value="${S.contract}">`,'',true)}
-    ${fld(p('fin'),tx('Finishing cost (EGP/m²)','تكلفة التشطيب (ج/م²)'),num(p('fin'),u.fin??FIN_COST[u.finish],500),tx('Assumption','افتراض'))}
-    ${fld(p('lease'),tx('Months to first rent','شهور لحد أول إيجار'),num(p('lease'),u.lease??LEASE_UP[u.finish],1,0,24),tx('After delivery','بعد الاستلام'))}
-    ${fld(p('mv'),tx('Cash market value today','القيمة السوقية كاش النهارده'),num(p('mv'),u.mv||'',50000),tx('Blank = net price','فاضي = السعر بعد الخصم'),true)}
-  </div></details>`;
-}
-function buildUnitB(){
-  const card=k=>{ const u=S.U[k], p=id=>`u-${k}-${id}`, ro=k==='a';
-    return `<div class="panel unit ${k}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="dot ${k}"></span><h2>${unitName(k)}</h2></div>
-    ${ro ? `<p class="hint" style="margin:0 0 8px">${zoneName(u.zone)} · ${FIN[u.finish][S.lang]} · ${u.area} ${tx('m²','م²')} · ${full(u.price)} · ${u.down}% ${tx('down','مقدم')} · ${u.years} ${tx('yrs','سنين')}</p><button class="linkbtn" data-tab="analyze">${tx('Edit on Analyze','عدّلها في صفحة التحليل')}</button>`
-    : `<div class="fg">
-      ${fld(p('zone'),tx('Zone','المنطقة'),sel(p('zone'),ZO(),u.zone))}${fld(p('finish'),tx('Finishing','التشطيب'),sel(p('finish'),FO(),u.finish))}
-      ${fld(p('area'),tx('Area (m²)','المساحة (م²)'),num(p('area'),u.area,1,10))}${fld(p('price'),tx('Price (EGP)','السعر (جنيه)'),num(p('price'),u.price,50000))}
-      ${fld(p('down'),tx('Down payment %','المقدم %'),num(p('down'),u.down,1,0,100))}${fld(p('years'),tx('Installment years','سنين التقسيط'),num(p('years'),u.years,1,0,12))}
-      ${fld(p('delm'),tx('Delivery','الاستلام'),sel(p('delm'),DO(),u.delm))}${fld(p('maint'),tx('Maintenance %','الصيانة %'),num(p('maint'),u.maint,0.5,0,20))}</div>`}</div>`; };
-  $('#unitCards').innerHTML = card('a') + card('b');
-}
-function buildAssume(){
-  const A=S.A, f=(id,lab,v,step,h)=>fld('a-'+id,lab,num('a-'+id,v,step,-50),h);
-  $('#assumeGrid').innerHTML=[
-    f('bank',tx('Certificate rate %','فايدة الشهادة %'),A.bank,0.5,tx('CBE, 24 Sep 2026','المركزي، 24 سبتمبر 2026')),
-    f('inf',tx('Inflation %','التضخم %'),A.inf,0.1,tx('Urban, Sep 2026','الحضر، سبتمبر 2026')),
-    f('fx',tx('USD rate','سعر الدولار'),A.fx,0.01,tx('CBE, 21 Oct 2026','المركزي، 21 أكتوبر 2026')),
-    f('dep',tx('EGP decline / yr %','تراجع الجنيه سنوياً %'),A.dep,0.5,tx('Assumption','افتراض')),
-    f('rentG',tx('Rent growth / yr %','زيادة الإيجار سنوياً %'),A.rentG,0.5,tx('JLL: +10% y/y','JLL: +10% سنوياً')),
-    f('vac',tx('Vacancy %','الشغور %'),A.vac,1,tx('Assumption','افتراض')),
-    f('svc',tx('Owner costs %','مصاريف المالك %'),A.svc,1,tx('Assumption','افتراض')),
-    f('saleFee',tx('Sale commission %','عمولة البيع %'),A.saleFee,0.25,tx('Market 1.5–2.5%','السوق 1.5–2.5%')),
-    f('gold',tx('Gold growth / yr %','نمو الدهب سنوياً %'),A.gold,0.5,tx('Assumption','افتراض')),
-    f('egx',tx('EGX30 growth / yr %','نمو EGX30 سنوياً %'),A.egx,0.5,tx('Assumption','افتراض')),
-    fld('a-tax',tx('Property tax','الضريبة العقارية'),sel('a-tax',[[1,tx('Included','محسوبة')],[0,tx('Excluded','مش محسوبة')]],A.tax?1:0),tx('10% after 32% deduction','10% بعد خصم 32%'))
-  ].join('');
-}
-
-/* ================= analyze ================= */
-let R={};
-function renderAnalyze(){
-  const u=S.U.a, r=R.a, H=S.hold, A=S.A;
-  const bankReal=(1+A.bank/100)/(1+A.inf/100)-1;
-  const winBank = r.real >= bankReal;
-  $('#storyTitle').innerHTML = isFinite(r.irr)
-    ? tx(`Over ${H} years this unit earns ${pct(r.irr)} a year, ${pct(r.real)} after inflation — ${winBank?'ahead of':'behind'} a bank certificate at ${pct(bankReal)}.`,
-         `على ${H} سنين الوحدة دي بتكسّبك ${pct(r.irr)} في السنة، و${pct(r.real)} بعد التضخم — ${winBank?'أحسن من':'أقل من'} الشهادة البنكية (${pct(bankReal)}).`)
-    : tx('Fill in the price and plan to see the result.','دخّل السعر وخطة السداد عشان تظهر النتيجة.');
-  const items = [];
-  items.push(r.n ? tx(`You pay ${egp(r.dp)} now, then ${r.n} installments of ${egp(r.inst)} until ${monthY(r.lastPlan)}. Total plan: ${egp(r.totalPlan)}.`,
-                      `هتدفع ${egp(r.dp)} دلوقتي، وبعدها ${r.n} قسط كل واحد ${egp(r.inst)} لحد ${monthY(r.lastPlan)}. إجمالي الخطة: ${egp(r.totalPlan)}.`)
-                 : tx(`You pay ${egp(r.totalPlan)} in cash${r.maintAmt?', maintenance included':''}.`, `هتدفع ${egp(r.totalPlan)} كاش${r.maintAmt?'، شامل الصيانة':''}.`));
-  items.push(tx(`First rent around ${monthY(r.rentStart+1)}: about ${egp(r.rentMonth)} a month before costs. ${T('noi','Net to you')}: ${egp(r.noi1/12)} a month.`,
-                `أول إيجار حوالي ${monthY(r.rentStart+1)}: تقريباً ${egp(r.rentMonth)} في الشهر قبل المصاريف. ${T('noi','الصافي ليك')}: ${egp(r.noi1/12)} في الشهر.`));
-  if (r.n) items.push(r.coverY>0 ? tx(`From year ${r.coverY}, the rent ${T('coverage','covers the installments')}: the unit starts paying for itself.`, `من السنة ${r.coverY} الإيجار ${T('coverage','بيغطي الأقساط')}: الوحدة بتبدأ تصرف على نفسها.`)
-                                 : tx(`The rent does not ${T('coverage','cover the installments')} during the plan; you fund them yourself.`, `الإيجار مش ${T('coverage','بيغطي الأقساط')} خلال الخطة، فهتدفعها من جيبك.`));
-  items.push(r.saleBeM>0 ? tx(`If you sell, you are back to zero from ${monthY(r.saleBeM)} (${yrs(r.saleBeM)}) — that is the ${T('salebe','break-even if sold')}. After that it is profit.`, `لو بعت، هترجع كل اللي دفعته من ${monthY(r.saleBeM)} (${yrs(r.saleBeM)}) — ده ${T('salebe','التعادل لو بعت')}. بعدها مكسب.`)
-                         : tx('Selling does not get your money back within 30 years in this scenario.','البيع مش بيرجّع فلوسك خلال 30 سنة في السيناريو ده.'));
-  items.push(r.paybackM>0 ? tx(`Without selling, rent alone returns all your money by ${monthY(r.paybackM)} (${yrs(r.paybackM)}) — the ${T('payback','cash payback')}.`, `من غير بيع، الإيجار لوحده يرجّعلك كل فلوسك في ${monthY(r.paybackM)} (${yrs(r.paybackM)}) — ده ${T('payback','استرداد الكاش')}.`)
-                          : tx('Rent alone does not return your money within 30 years.','الإيجار لوحده مش بيرجّع فلوسك خلال 30 سنة.'));
-  items.push(tx(`Sell after ${H} years and every pound you paid comes back as ${fmt(r.multiple,2)} (${T('multiple','equity multiple')}).`, `لو بعت بعد ${H} سنين، كل جنيه دفعته بيرجعلك ${fmt(r.multiple,2)} (${T('multiple','مضاعف رأس المال')}).`));
-  $('#storyList').innerHTML = items.map((t,i)=>`<li><span class="n">${i+1}</span><span>${t}</span></li>`).join('');
-
-  // milestone line
-  const ms = [];
-  if (r.rentStart+1 <= 360) ms.push([r.rentStart+1, tx('First rent','أول إيجار')]);
-  if (r.n && r.lastPlan>0) ms.push([r.lastPlan, tx('Last installment','آخر قسط')]);
-  if (r.coverY>0) ms.push([12*(r.coverY-1)+1, tx('Rent covers installments','الإيجار يغطي القسط')]);
-  if (r.saleBeM>0) ms.push([r.saleBeM, tx('Break-even if sold','التعادل لو بعت')]);
-  if (r.paybackM>0) ms.push([r.paybackM, tx('All cash back from rent','كل الكاش رجع من الإيجار')]);
-  ms.sort((a,b)=>a[0]-b[0]);
-  const end = Math.max(12*H, ...ms.map(m=>m[0])) * 1.04;
-  const pos = m => (m/end*100).toFixed(2)+'%';
-  const ticksY = []; const stepY = end/12 > 12 ? 5 : end/12 > 6 ? 2 : 1;
-  for (let y=0; y*12<=end; y+=stepY) ticksY.push(y);
-  $('#mline').style.setProperty('--endside', ar() ? 'left' : 'right');
-  $('#mline').style.setProperty('--be', r.saleBeM>0 ? pos(r.saleBeM) : '100%');
-  $('#mline').innerHTML = `<div class="bar"></div>` + ticksY.map(y=>`<span class="tick" style="inset-inline-start:${pos(12*y)}">${y===0?tx('Today','النهارده'):tx('Yr ','سنة ')+y}</span>`).join('')
-    + `<span class="now" style="inset-inline-start:0"></span>` + ms.map((m,i)=>`<span class="mk" style="inset-inline-start:${pos(m[0])}" title="${m[1]} · ${monthY(m[0])}">${i+1}</span>`).join('');
-  $('#mlist').innerHTML = ms.map((m,i)=>`<li><span class="n">${i+1}</span><span>${m[1]}</span><b class="num">${monthY(m[0])}</b></li>`).join('');
-  $('#mlineNote').textContent = tx('Red: still below what you paid if you sold. Green: in profit.','الأحمر: لو بعت لسه تحت اللي دفعته. الأخضر: مكسب.');
-
-  // kpis
-  const k = (key,val,meta,hi) => `<div class="kpi${hi?' hi':''}"><div class="lab">${T(key)}</div><div class="val num">${val}</div><div class="meta">${meta||''}</div></div>`;
-  $('#kpis').innerHTML = [
-    k('irr', pct(r.irr), tx('per year, every payment dated','سنوياً، بمواعيد كل دفعة'), true),
-    k('real', pct(r.real), tx(`after ${A.inf}% inflation`,`بعد تضخم ${A.inf}%`)),
-    k('usd', pct(r.usd), tx('per year in dollars','سنوياً بالدولار')),
-    k('roi', pct(r.roi,0), tx(`total over ${H} years`,`إجمالي على ${H} سنين`)),
-    k('nety', pct(r.netY), tx(`gross ${pct(r.gross)}`,`الإجمالي ${pct(r.gross)}`)),
-    k('cap', pct(r.cap), tx('NOI ÷ market value','صافي الدخل ÷ القيمة السوقية')),
-    k('npv', money(r.npv), r.npv>=0 ? tx('beats the certificate','أحسن من الشهادة') : tx('below the certificate','أقل من الشهادة')),
-    k('pv', money(r.pvPlan), tx(`hidden discount ${pct(r.effDisc)}`,`خصم مخفي ${pct(r.effDisc)}`)),
-    k('grm', fmt(r.grm,1)+'×', tx('years of rent = price','سنين إيجار = السعر')),
-    k('multiple', fmt(r.multiple,2)+'×', tx(`if sold after ${H} yrs`,`لو بعت بعد ${H} سنين`)),
-    k('grow', isFinite(r.beGrowth)?pct(r.beGrowth):'—', tx(`scenario assumes ${pct(SCN[S.scn].pg,0)}`,`السيناريو ${pct(SCN[S.scn].pg,0)}`)),
-    k('score', r.score+' / 100', tx('yield · delivery · developer','عائد · استلام · مطوّر'))
-  ].join('');
-
-  // position chart
-  const ys=[0,...r.years.map(y=>y.y)], cumV=ys.map(y=>r.cum[12*y]), posV=ys.map(y=>r.cum[12*y]+r.saleNet(12*y));
-  const fm=v=>(v<0?'−':'')+egp(Math.abs(v));
-  const ser=[{label:tx('If you sell that year','لو بعت السنة دي'),color:'var(--s1)',bold:true,values:posV,fmt:fm},{label:tx('Rent only, no sale','إيجار بس من غير بيع'),color:'var(--s3)',values:cumV,fmt:fm}];
-  $('#posLegend').innerHTML=ser.map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('');
-  const pu=lineChart($('#posChart'),{labels:ys.map(y=>y===0?tx('Today','النهارده'):tx('Yr ','سنة ')+y),series:ser,zero:true});
-  $('#posLegend').insertAdjacentHTML('beforeend',`<span style="color:var(--muted)">${tx('EGP','جنيه')} ${pu}</span>`);
-
-  // schedule
-  const lbl=p=>({dp:tx('Down payment','المقدم'),dp2:tx('2nd down payment','مقدم تاني'),del:tx('Delivery payment','دفعة الاستلام'),bal:tx('Balance (cash)','الباقي كاش'),maint:tx('Maintenance deposit','وديعة الصيانة'),inst:tx(`Installment ${p.i}`,`قسط ${p.i}`)})[p.k];
-  let tot=0;
-  $('#schedTable').innerHTML=`<thead><tr><th>#</th><th>${tx('Item','البند')}</th><th>%</th><th>${tx('Amount','المبلغ')}</th><th>${tx('Due','الاستحقاق')}</th></tr></thead><tbody>${
-    r.plan.map((p,i)=>{ if(p.k!=='maint') tot+=p.amt; return `<tr><td class="v">${i+1}</td><td>${lbl(p)}</td><td class="v">${pct(p.amt/r.net,2)}</td><td class="v"><span class="num">${fmt(Math.round(p.amt))}</span></td><td class="v">${dateAt(p.m)}</td></tr>`; }).join('')
-  }<tr class="total"><td></td><td>${tx('Unit price','سعر الوحدة')}</td><td class="v">100%</td><td class="v"><span class="num">${fmt(Math.round(tot))}</span></td><td></td></tr></tbody>`;
-
-  // break-even list
-  const wh=m=>m<0?tx('Not within 30 years','مش خلال 30 سنة'):`${monthY(m)} · ${yrs(m)}`;
-  const be=[[T('coverage'), r.n ? (r.coverY>0?tx(`Year ${r.coverY}`,`السنة ${r.coverY}`):tx('Not during the plan','مش خلال الخطة')) : tx('No installments','مفيش أقساط'), tx('Yearly net rent ≥ installments due that year.','الإيجار الصافي في السنة ≥ أقساط السنة.')],
-            [T('payback'), wh(r.paybackM), tx('Total net rent = everything paid, without selling.','مجموع الإيجار الصافي = كل اللي دفعته، من غير بيع.')],
-            [T('salebe'), wh(r.saleBeM), tx('Rent received + net sale ≥ everything paid.','الإيجار المتجمع + صافي البيع ≥ كل اللي دفعته.')],
-            [T('grow'), isFinite(r.beGrowth)?pct(r.beGrowth)+tx(' / yr',' سنوياً'):'—', tx(`Needed to match ${A.bank}% certificates over ${H} years.`,`اللازم عشان تكسب زي شهادة ${A.bank}% على ${H} سنين.`)]];
-  $('#beList').innerHTML=be.map(([t,v,s])=>`<div class="be-row"><b>${t}</b><span class="val">${v}</span><small>${s}</small></div>`).join('');
-
-  // cash-flow table
-  const c=v=>`<td class="v ${v<0?'neg':''}"><span class="num">${(v<0?'−':'')+compact(Math.abs(v))}</span></td>`;
-  $('#cfTable').innerHTML=`<thead><tr><th>${tx('Year','السنة')}</th><th>${tx('Paid out','المدفوع')}</th><th>${tx('Net rent','الإيجار الصافي')}</th><th>${tx('Net','صافي السنة')}</th><th>${tx('Cumulative','التراكمي')}</th><th>${T('coverage',tx('Coverage','التغطية'))}</th><th>${tx('Unit value','قيمة الوحدة')}</th><th>${tx('If sold','لو بعت')}</th></tr></thead><tbody>${
-    r.years.map(y=>`<tr><td>${y.y}</td>${c(-y.paid)}${c(y.rent)}${c(y.netY)}${c(y.cum)}<td class="v">${isFinite(y.cov)?`<span class="pill ${y.cov>=1?'good':'bad'}">${fmt(y.cov*100,0)}%</span>`:'—'}</td>${c(y.val)}${c(y.pos)}</tr>`).join('')}</tbody>`;
-
-  // alternatives chart
-  const yrsA=[...Array(H+1).keys()], alt=x=>yrsA.map(t=>1e6*Math.pow(1+x/100,t));
-  const conv=arr=>S.cur==='USD'?arr.map((v,t)=>v/fxAt(12*t)):arr, mf=v=>(S.cur==='USD'?'$':'')+compact(v)+(S.cur==='USD'?'':tx('',' ج'));
-  const aser=[{label:unitName('a'),color:'var(--s1)',bold:true,values:conv(r.line),fmt:mf},{label:tx('Bank certificate','شهادة بنكية'),color:'var(--s3)',values:conv(alt(A.bank)),fmt:mf},{label:tx('Gold','دهب'),color:'var(--s4)',values:conv(alt(A.gold)),fmt:mf},{label:'EGX30',color:'var(--s5)',values:conv(alt(A.egx)),fmt:mf}];
-  $('#altLegend').innerHTML=aser.map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('');
-  const un=lineChart($('#altChart'),{labels:yrsA.map(t=>t===0?tx('Today','النهارده'):tx('Yr ','سنة ')+t),series:aser});
-  $('#chartCur').textContent=`${tx('Value in','القيمة')} ${un} ${S.cur==='USD'?tx('USD','دولار'):tx('EGP','جنيه')}`;
-
-  // comparables
-  const z=ZONES.find(x=>x.id===u.zone);
-  $('#compHint').textContent=`${zoneName(u.zone)} · ${tx('fitted median','وسيط كامل التشطيب')} ${fmt(z.rent.full)} ${tx('EGP/m²/mo','ج/م²/شهر')}`;
-  $('#compTable').innerHTML=`<thead><tr><th>${tx('Finishing','التشطيب')}</th><th>${tx('Area','المساحة')}</th><th>${tx('Monthly rent','الإيجار الشهري')}</th><th>${tx('Per m²','للمتر')}</th><th>${tx('Source','المصدر')}</th><th>${tx('Listed','من')}</th></tr></thead><tbody>${
-    LISTINGS.filter(l=>l[0]===u.zone).map(l=>`<tr><td>${FIN[l[1]][S.lang]}</td><td class="v"><span class="num">${l[2]} ${tx('m²','م²')}</span></td><td class="v"><span class="num">${full(l[3])}</span></td><td class="v"><span class="num">${fmt(l[3]/l[2])}</span></td><td>${l[4]}</td><td>${l[5]} ${tx('days','يوم')}</td></tr>`).join('')}</tbody>`;
-  renderSources();
-}
-
-const SRC=()=>[
-  ['off',tx('CBE overnight deposit rate','فايدة الإيداع للبنك المركزي'),`${S.A.bank}%`,'24/09/2026','Egypt Today','https://www.egypttoday.com/Article/3/149692/CBE-holds-interest-rates-steady-keeps-deposit-rate-at-19'],
-  ['off',tx('Urban inflation','التضخم في الحضر'),`${S.A.inf}%`,'10/10/2026','Daily News Egypt','https://www.dailynewsegypt.com/2026/10/10/egypts-annual-urban-inflation-eases-to-13-9-in-september/'],
-  ['off',tx('USD exchange rate','سعر الدولار'),`${S.A.fx}`,'21/10/2026','Banker (CBE rate)','https://banker.news/157053'],
-  ['off',tx('Property tax','الضريبة العقارية'),tx('10% after 32% deduction','10% بعد خصم 32%'),tx('Law 196/2008','قانون 196/2008'),'Andersen Egypt','https://eg.andersen.com/property-tax/'],
-  ['mkt',tx('New Cairo office rent levels','مستوى إيجارات المكاتب في التجمع'),tx('Grade A ≈ $348/m²/yr','Grade A ≈ 348$/م²/سنة'),'08/07/2026','Knight Frank via EnterpriseAM','https://enterpriseam.com/egypt/2026/07/08/cairo-office-rents-jump-20-as-demand-outpaces-supply-of-grade-a-space/'],
-  ['mkt',tx('Rent growth','زيادة الإيجار'),`${S.A.rentG}% / ${tx('yr','سنة')}`,'13/05/2026','JLL via EnterpriseAM','https://enterpriseam.com/egypt/hardhats/cairos-rental-market-running-double-digit-increase-while-sales-stall/'],
-  ['mkt',tx('Rent per m² by zone','إيجار المتر حسب المنطقة'),tx('Listing median','وسيط الإعلانات'),tx('Daily (live)','يومياً'),'Property Finder · Aqarmap · Bayut',''],
-  ['mkt',tx('Sale / leasing commission','عمولة البيع / التأجير'),tx(`${S.A.saleFee}% · 1 month`,`${S.A.saleFee}% · إيجار شهر`),'—','Aqarmap','https://aqarmap.com.eg/ar/advice/?p=25458'],
-  ['ctr',tx('Maintenance and plan terms','الصيانة وشروط الخطة'),tx('Per unit','حسب الوحدة'),'—',tx('Unit contract','عقد الوحدة'),''],
-  ['asm',tx('Price growth scenarios','سيناريوهات نمو السعر'),'4% · 10% · 16%','—',tx('Assumption (JLL resale +3.1% y/y)','افتراض (JLL إعادة البيع +3.1%)'),''],
-  ['asm',tx('Vacancy, owner costs, finishing, lease-up','الشغور والمصاريف والتشطيب وفترة التأجير'),`${S.A.vac}% · ${S.A.svc}%`,'—',tx('Assumption','افتراض'),''],
-  ['asm',tx('Gold, EGX30, EGP decline','الدهب وEGX30 وتراجع الجنيه'),`${S.A.gold}% · ${S.A.egx}% · ${S.A.dep}%`,'—',tx('Assumption','افتراض'),'']
-];
-function renderSources(){
-  const typ={off:tx('Official','رسمي'),mkt:tx('Market data','بيانات سوق'),ctr:tx('Contract','عقد'),asm:tx('Assumption','افتراض')};
-  $('#srcTable').innerHTML=`<thead><tr><th>${tx('Input','الرقم')}</th><th>${tx('Value','القيمة')}</th><th>${tx('Type','النوع')}</th><th>${tx('Date','التاريخ')}</th><th>${tx('Source','المصدر')}</th></tr></thead><tbody>${
-    SRC().map(([t,n,v,d,s,u])=>`<tr><td>${n}</td><td class="v"><span class="num">${v}</span></td><td><span class="pill ${t}">${typ[t]}</span></td><td class="v">${d}</td><td>${u?`<a href="${u}" target="_blank" rel="noopener">${s}</a>`:s}</td></tr>`).join('')}</tbody>`;
-}
-
-/* ================= compare ================= */
-function renderCompare(){
-  buildUnitBIfNeeded();
-  const ra=R.a, rb=R.b, H=S.hold, A=S.A, bankReal=(1+A.bank/100)/(1+A.inf/100)-1;
-  $$('[data-name="a"]').forEach(e=>e.textContent=unitName('a')); $$('[data-name="b"]').forEach(e=>e.textContent=unitName('b'));
-  const aw=ra.irr>=rb.irr, W=aw?ra:rb, L=aw?rb:ra, wn=unitName(aw?'a':'b'), ln=unitName(aw?'b':'a');
-  $('#vBar').style.background=aw?'var(--s1)':'var(--s2)';
-  $('#vTitle').textContent=tx(`${wn} earns more: ${pct(W.real)} a year after inflation, against ${pct(L.real)}.`,`${wn} بتكسب أكتر: ${pct(W.real)} سنوياً بعد التضخم، مقابل ${pct(L.real)}.`);
-  $('#vText').textContent=tx(`Bank certificate after inflation: ${pct(bankReal)}. Holding period ${H} years.`,`الشهادة البنكية بعد التضخم: ${pct(bankReal)}. مدة الاحتفاظ ${H} سنين.`);
-  const dt=m=>m<0?'—':yrs(m);
-  const rows=[
-    [tx('Price per m²','سعر المتر'),money(ra.ppm),money(rb.ppm),ra.ppm,rb.ppm,'low'],
-    [tx('Monthly rent','الإيجار الشهري'),money(ra.rentMonth),money(rb.rentMonth),ra.rentMonth,rb.rentMonth,'high'],
-    [T('nety'),pct(ra.netY),pct(rb.netY),ra.netY,rb.netY,'high'],
-    [T('cap'),pct(ra.cap),pct(rb.cap),ra.cap,rb.cap,'high'],
-    [T('pv'),money(ra.pvPlan),money(rb.pvPlan),ra.pvPlan/ra.net,rb.pvPlan/rb.net,'low'],
-    [T('roi'),pct(ra.roi,0),pct(rb.roi,0),ra.roi,rb.roi,'high'],
-    [T('irr'),pct(ra.irr),pct(rb.irr),ra.irr,rb.irr,'high'],
-    [T('real'),pct(ra.real),pct(rb.real),ra.real,rb.real,'high'],
-    [T('usd'),pct(ra.usd),pct(rb.usd),ra.usd,rb.usd,'high'],
-    [T('npv'),money(ra.npv),money(rb.npv),ra.npv,rb.npv,'high'],
-    [T('payback'),dt(ra.paybackM),dt(rb.paybackM),ra.paybackM<0?1e9:ra.paybackM,rb.paybackM<0?1e9:rb.paybackM,'low'],
-    [T('salebe'),dt(ra.saleBeM),dt(rb.saleBeM),ra.saleBeM<0?1e9:ra.saleBeM,rb.saleBeM<0?1e9:rb.saleBeM,'low'],
-    [T('score'),ra.score+' / 100',rb.score+' / 100',ra.score,rb.score,'high']];
-  $('#cmpBody').innerHTML=rows.map(([k,va,vb,na,nb,dir])=>{ const ok=isFinite(na)&&isFinite(nb)&&Math.abs(na-nb)>1e-9, aw2=ok&&(dir==='high'?na>nb:na<nb), bw=ok&&!aw2;
-    return `<tr><td class="k">${k}</td><td class="v ${aw2?'win':''}"><span class="num">${va}</span></td><td class="v ${bw?'win':''}"><span class="num">${vb}</span></td></tr>`; }).join('');
-  const Y=Math.max(ra.years.length, rb.years.length), ys=[...Array(Y+1).keys()], fm=v=>(v<0?'−':'')+egp(Math.abs(v));
-  const ser=[{label:unitName('a'),color:'var(--s1)',bold:true,values:ys.map(y=>ra.cum[12*y]+ra.saleNet(12*y)),fmt:fm},{label:unitName('b'),color:'var(--s2)',bold:true,values:ys.map(y=>rb.cum[12*y]+rb.saleNet(12*y)),fmt:fm}];
-  $('#cmpLegend').innerHTML=ser.map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('');
-  const cu=lineChart($('#cmpChart'),{labels:ys.map(y=>y===0?tx('Today','النهارده'):tx('Yr ','سنة ')+y),series:ser,zero:true});
-  $('#cmpLegend').insertAdjacentHTML('beforeend',`<span style="color:var(--muted)">${tx('EGP','جنيه')} ${cu}</span>`);
-}
-let unitBBuiltFor='';
-function buildUnitBIfNeeded(){ const key=S.lang+JSON.stringify(S.U.a); if(unitBBuiltFor!==key || !$('#u-b-zone')){ buildUnitB(); unitBBuiltFor=key; } }
-
-/* ================= market / news / opps ================= */
-function renderMarket(){
-  const t=(l,v,m)=>`<div class="tile"><div class="lab">${l}</div><div class="val num">${v}</div><div class="meta">${m}</div></div>`;
-  $('#tiles').innerHTML=[t(tx('CBE deposit rate','فايدة البنك المركزي'),'19%',tx('6th hold · 24 Sep 2026','تثبيت سادس · 24 سبتمبر 2026')),
-    t(tx('Urban inflation','التضخم في الحضر'),'13.9%',tx('Sep 2026','سبتمبر 2026')),
-    t(tx('USD (CBE, sell)','الدولار (المركزي)'),'54.58',tx('21 Oct 2026','21 أكتوبر 2026')),
-    t(tx('GDP growth forecast','توقع النمو'),'4.7%',tx('IMF · FY2026/27','صندوق النقد · 2026/27')),
-    t(tx('Cairo office rents','إيجارات المكاتب'),'+20%',tx('y/y in EGP · Knight Frank','سنوياً بالجنيه · Knight Frank'))].join('');
-  const mx=DEVS[0][2];
-  $('#devTable').innerHTML=`<thead><tr><th>#</th><th>${tx('Developer','المطوّر')}</th><th>${tx('Sales','المبيعات')}</th></tr></thead><tbody>${DEVS.map((d,i)=>`<tr><td class="v">${i+1}</td><td>${ar()?d[1]:d[0]}</td><td><div class="barcell"><i style="width:${Math.round(d[2]/mx*110)}px"></i><span class="num">${fmt(d[2],1)}</span></div></td></tr>`).join('')}</tbody>`;
-  const box=$('#zoneChart'), W=box.clientWidth||500, rows=ZONES.map(z=>[zoneName(z.id),z.rent.full]), max=Math.max(...rows.map(r=>r[1])), labW=130, valW=56, bh=22, gap=18, rtl=ar();
-  const Hh=4+rows.length*(bh+gap), bw=v=>(W-labW-valW)*v/max; let svg=`<svg xmlns="${NS}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true">`;
-  rows.forEach(([nm,v],i)=>{ const y=4+i*(bh+gap), w=bw(v);
-    svg+= rtl ? `<text x="${W}" y="${y+bh/2+4}" text-anchor="end" style="fill:var(--ink);font-size:13px">${nm}</text><rect x="${W-labW-w}" y="${y}" width="${w}" height="${bh}" rx="4" fill="var(--accent)"/><text x="${W-labW-w-8}" y="${y+bh/2+4}" text-anchor="end" style="fill:var(--ink);font-weight:600">${fmt(v)}</text>`
-              : `<text x="0" y="${y+bh/2+4}" style="fill:var(--ink);font-size:13px">${nm}</text><rect x="${labW}" y="${y}" width="${w}" height="${bh}" rx="4" fill="var(--accent)"/><text x="${labW+w+8}" y="${y+bh/2+4}" style="fill:var(--ink);font-weight:600">${fmt(v)}</text>`; });
-  box.style.height=Hh+'px'; box.innerHTML=svg+'</svg>';
-  const inf=S.A.inf/100, bank=S.A.bank/100, y=ZONES[0].rent.full*12/182000*(1-S.A.vac/100-S.A.svc/100-0.068);
-  const rr=[[tx('Bank certificate (19%)','شهادة بنكية (19%)'),(1+bank)/(1+inf)-1],[tx('Office net rent yield','العائد الإيجاري الصافي لمكتب'),(1+y)/(1+inf)-1],[tx('Office total (rent + base growth)','مكتب: إيجار + نمو السعر الواقعي'),(1+y+SCN.base.pg)/(1+inf)-1]];
-  $('#realTable').innerHTML=`<tbody>${rr.map(([l,v])=>`<tr><td>${l}</td><td class="v ${v<0?'neg':''}"><span class="num">${pct(v)}</span></td></tr>`).join('')}</tbody>`;
-}
-function renderNews(){
-  $('#newsFilter').innerHTML=Object.keys(CATS).map(c=>`<button class="chip" type="button" aria-pressed="${S.news===c}" data-cat="${c}">${CATS[c][S.lang]}</button>`).join('');
-  const fd=iso=>new Date(iso+'T00:00:00').toLocaleDateString(ar()?'ar-EG-u-nu-latn':'en-GB',{day:'numeric',month:'short',year:'numeric'});
-  $('#newsList').innerHTML=NEWS.filter(n=>S.news==='all'||n.c===S.news).map(n=>{ const t=n[S.lang]; return `<article class="panel news-item">
-    <div class="news-meta"><span>${n.d?fd(n.d):n.p[S.lang]}</span><span class="pill ctr">${CATS[n.c][S.lang]}</span></div>
-    <div><h2>${t[0]}</h2><p>${t[1]}</p><div class="why"><b>${tx('What it means for you: ','يعني إيه بالنسبة لك: ')}</b>${t[2]}</div>
-    <div class="src">${tx('Source:','المصدر:')} <a href="${n.url}" target="_blank" rel="noopener">${n.src}</a></div></div></article>`; }).join('');
-}
-function renderOpps(){
-  $('#oppList').innerHTML=OPPS.map((o,i)=>{ const r=compute({...base,zone:o.zone,finish:o.finish,area:o.area,price:o.price,down:o.down,years:o.years,delm:o.delm,maint:o.maint,dev:o.dev},S.hold);
-    return `<article class="panel opp"><div class="opp-top"><div><h2>${ar()?o.ar:o.en}</h2><span class="hint" style="font-size:12.5px;color:var(--muted)">${zoneName(o.zone)} · ${o.delm?tx('delivery in 1 year','استلام بعد سنة'):tx('ready now','استلام فوري')} · ${o.dev==='big'?tx('major developer','مطوّر كبير'):tx('mid-size developer','مطوّر متوسط')}</span></div>
-    <div class="score"><b class="num">${r.score}</b><span>${tx('Score','الدرجة')}</span></div></div>
-    <div class="facts"><div><small>${tx('Price','السعر')}</small><b>${money(o.price)}</b></div><div><small>${tx('Net yield','العائد الصافي')}</small><b>${pct(r.netY)}</b></div><div><small>IRR</small><b>${pct(r.irr)}</b></div></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-opp="${i}" data-slot="a">${tx('Analyze','حلّلها')}</button><button class="btn ghost" type="button" data-opp="${i}" data-slot="b">${tx('Compare as Unit B','قارنها كوحدة ب')}</button></div></article>`; }).join('');
-}
-
-/* ================= glossary popover ================= */
-const pop=$('#pop');
-function openTerm(btn){
-  const g=GL[btn.dataset.term]; if(!g) return; const [t,d,f]=g[S.lang];
-  pop.innerHTML=`<b>${t}</b>${d}${f?`<code>${f}</code>`:''}`; pop.hidden=false;
-  const r=btn.getBoundingClientRect(), pw=Math.min(320, document.documentElement.clientWidth-32);
-  pop.style.maxWidth=pw+'px';
-  let left=r.left+window.scrollX; left=Math.max(16, Math.min(left, window.scrollX+document.documentElement.clientWidth-pw-16));
-  pop.style.left=left+'px'; pop.style.top=(r.bottom+window.scrollY+8)+'px';
-}
-
-/* ================= render loop ================= */
-function applyStatic(){
-  const r=document.documentElement; r.lang=S.lang; r.dir=ar()?'rtl':'ltr';
-  $$('[data-ar]').forEach(el=>{ if(!('en' in el.dataset)) el.dataset.en=el.textContent; el.textContent=ar()?el.dataset.ar:el.dataset.en; });
-  $('#langBtn').textContent=ar()?'English':'العربية';
-  document.title=ar()?'AqarMath · العقار بالأرقام':'AqarMath · Real estate, by the numbers';
-  $('#destSel').innerHTML=DESTS.map(d=>opt(d.id,(ar()?d.ar:d.en)+(d.live?'':tx(' (soon)',' (قريباً)')),S.dest,!d.live)).join('');
-}
-function renderAll(){
-  R.a=compute(S.U.a,S.hold); R.b=compute(S.U.b,S.hold);
-  ({analyze:renderAnalyze, compare:renderCompare, market:renderMarket, news:renderNews, opps:renderOpps})[S.tab]();
-}
-function rebuild(){ applyStatic(); buildInputs(); buildAssume(); unitBBuiltFor=''; renderAll(); }
-function showTab(id){ S.tab=id; $$('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===id)); $$('.page').forEach(p=>p.hidden=p.id!==id); pop.hidden=true; renderAll(); window.scrollTo({top:0}); }
-
-const NUMK=['area','price','down','years','disc','dp2','dp2m','freq','delm','delpay','maint','maintb','fin','lease','mv'];
-document.addEventListener('input',e=>{
-  const id=e.target.id||''; let m;
-  if((m=id.match(/^u-([ab])-(\w+)$/))){ const [,k,f]=m, v=e.target.value;
-    S.U[k][f]=NUMK.includes(f)?(v===''?(f==='fin'||f==='lease'?null:0):+v):v;
-    if(f==='finish'){ S.U[k].fin=null; S.U[k].lease=null; if(k==='a'){ const fi=$('#u-a-fin'), le=$('#u-a-lease'); if(fi) fi.value=FIN_COST[v]; if(le) le.value=LEASE_UP[v]; } }
-    renderAll(); return; }
-  if((m=id.match(/^a-(\w+)$/))){ S.A[m[1]]=m[1]==='tax'?e.target.value==='1':(+e.target.value||0); renderAll(); return; }
-  if(id==='hold'){ S.hold=+e.target.value; renderAll(); return; }
-  if(id==='contract'){ if(e.target.value) S.contract=e.target.value; renderAll(); }
-});
-document.addEventListener('change',e=>{ if(e.target.tagName==='SELECT') e.target.dispatchEvent(new Event('input',{bubbles:true})); });
-document.addEventListener('click',e=>{
-  const term=e.target.closest('.term'); if(term){ e.preventDefault(); if(!pop.hidden && pop.dataset.for===term.dataset.term){ pop.hidden=true; return; } pop.dataset.for=term.dataset.term; openTerm(term); return; }
-  if(!e.target.closest('#pop')) pop.hidden=true;
-  const b=e.target.closest('button'); if(!b) return;
-  if(b.dataset.tab) return showTab(b.dataset.tab);
-  if(b.dataset.cur){ S.cur=b.dataset.cur; $$('#curSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); return renderAll(); }
-  if(b.dataset.scn){ S.scn=b.dataset.scn; $$('#scnSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); return renderAll(); }
-  if(b.dataset.cat){ S.news=b.dataset.cat; return renderNews(); }
-  if(b.dataset.opp){ const o=OPPS[+b.dataset.opp], k=b.dataset.slot;
-    S.U[k]={...base,name:ar()?`${o.ar} — ${zoneName(o.zone)}`:`${o.en}, ${zoneName(o.zone)}`,zone:o.zone,finish:o.finish,area:o.area,price:o.price,down:o.down,years:o.years,delm:o.delm,maint:o.maint,dev:o.dev};
-    if(k==='a') buildInputs(); unitBBuiltFor=''; return showTab(k==='a'?'analyze':'compare'); }
-  if(b.id==='langBtn'){ S.lang=ar()?'en':'ar'; try{localStorage.setItem('lang',S.lang);}catch(err){} rebuild(); }
-});
-document.addEventListener('toggle',e=>{ if(e.target.classList&&e.target.classList.contains('more')) moreOpen=e.target.open; },true);
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.hidden=true; });
-let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ pop.hidden=true; renderAll(); },150); });
-
-const h=(location.hash||'').slice(1); if(['analyze','compare','market','news','opps'].includes(h)) S.tab=h;
-rebuild(); showTab(S.tab);
-})();
-</script>
-</body></html>
+<script src="/engine.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
