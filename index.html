@@ -59,8 +59,11 @@
         <div class="seg" role="group" aria-label="Scenario" id="scnSeg">
           <button type="button" aria-pressed="false" data-scn="low" data-ar="متشائم">Cautious</button><button type="button" aria-pressed="true" data-scn="base" data-ar="واقعي">Base</button><button type="button" aria-pressed="false" data-scn="high" data-ar="متفائل">Strong</button>
         </div>
-        <label class="field-inline" for="hold"><span data-ar="لو هبيع بعد">Sell after</span>
-          <select id="hold" class="plain" style="width:auto"><option value="3" data-ar="3 سنين">3 years</option><option value="5" selected data-ar="5 سنين">5 years</option><option value="7" data-ar="7 سنين">7 years</option><option value="10" data-ar="10 سنين">10 years</option></select>
+        <div class="seg" role="group" aria-label="Exit" id="exitSeg">
+          <button type="button" aria-pressed="true" data-exit="sell" data-ar="هبيع">Sell</button><button type="button" aria-pressed="false" data-exit="keep" data-ar="هحتفظ للدخل">Keep for income</button>
+        </div>
+        <label class="field-inline" for="hold"><span id="holdLab"></span>
+          <select id="hold" class="plain" style="width:auto"><option value="3" data-ar="3 سنين">3 years</option><option value="5" selected data-ar="5 سنين">5 years</option><option value="7" data-ar="7 سنين">7 years</option><option value="10" data-ar="10 سنين">10 years</option><option value="15" data-ar="15 سنة">15 years</option><option value="20" data-ar="20 سنة">20 years</option></select>
         </label>
       </div>
 
@@ -83,6 +86,13 @@
         <div class="mline" id="mline"></div><ol class="mlist" id="mlist"></ol>
       </div>
 
+      <div class="panel">
+        <div class="ph"><h2 data-ar="لو احتفظت بيها: دخلك الشهري">If you keep it: your monthly income</h2><p data-ar="من غير بيع · مقارنة بفايدة الشهادة على نفس الفلوس">No sale · against certificate interest on the same money</p></div>
+        <div class="inc-sum" id="incSum"></div>
+        <div class="scroll"><table class="t" id="incTable"></table></div>
+        <p class="note" id="incNote"></p>
+      </div>
+
       <div>
         <div class="kpis" id="kpis"></div>
         <div class="more-kpis"><button class="linkbtn" type="button" id="moreKpis"></button></div>
@@ -97,7 +107,8 @@
       <div class="grid2 fit">
         <div class="panel">
           <div class="ph"><h2 data-ar="جدول الأقساط">Installment schedule</h2><p data-ar="بالجنيه">EGP</p></div>
-          <div class="tall"><table class="t" id="schedTable"></table></div>
+          <table class="t" id="schedTable"></table>
+          <button class="linkbtn mt" type="button" id="schedAll"></button>
         </div>
         <div class="panel">
           <div class="ph"><h2 data-ar="نقط التعادل">Break-even points</h2></div>

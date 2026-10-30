@@ -320,3 +320,11 @@ footer.foot{border-top:1px solid var(--line);padding-block:22px;color:var(--mute
   .print-head .wm{font-size:22px}
   .print-foot{margin-top:16px;border-top:1px solid #ccc;padding-top:8px;font-size:10.5px;color:#444}
 }
+.inc-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.inc-sum div{background:var(--bg,#f4f4f0);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:4px}
+.inc-sum small{font-size:12px;color:var(--muted)} .inc-sum b{font-family:var(--display);font-size:16px}
+#incTable td.win,#incTable td.win .num{color:var(--good);font-weight:700}
+#schedAll{display:block}
+@media (max-width:720px){ .inc-sum{grid-template-columns:repeat(2,minmax(0,1fr))} }
+#schedTable td,#schedTable th{white-space:normal;word-break:break-word}
+@media (max-width:720px){ #schedTable{font-size:13px;table-layout:fixed} #schedTable th:first-child,#schedTable td:first-child{width:52px} }

@@ -22,8 +22,8 @@
   Object.values(GRADES).forEach(g => { g.full = Math.round(g.usdYr * FX_REF / 12 / 10) * 10; });
   const FIN_SHARE  = { full: 1, semi: 0.70, core: 0.50 };    // rent of a unit as is, vs fitted
   const FIN_COST   = { full: 0, semi: 12000, core: 25000 };  // EGP per m² to reach "fitted"
-  const FIN_MONTHS = { full: 0, semi: 3, core: 5 };          // months of works after delivery
-  const LEASE_UP   = { full: 6, semi: 8, core: 9 };          // months to find a tenant
+  const FIN_MONTHS = { full: 0, semi: 0, core: 1 };          // extra months when works cannot overlap marketing
+  const LEASE_UP   = { full: 3, semi: 3, core: 3 };          // months from delivery to first rent (finishing and marketing overlap)
   const YIELD_CHECK = 0.12;                                   // gross yields above this are flagged
   const CASH_DISC_MAX = 0.30;                                 // cap on the estimated cash discount
   /* pg is added to the base price-growth input; delay pushes delivery (and rent) back. */
@@ -137,7 +137,7 @@
     const doFinish = u.finish !== 'full' && u.afterDel !== 'asis';
     const rentFinish = doFinish ? 'full' : u.finish;
     const finCost = doFinish ? (u.fin ?? FIN_COST[u.finish]) * u.area : 0;
-    const leaseM = u.lease ?? (LEASE_UP[rentFinish] + (doFinish ? FIN_MONTHS[u.finish] : 0));
+    const leaseM = u.lease ?? (LEASE_UP[u.finish] + (doFinish ? FIN_MONTHS[u.finish] : 0));
     const z = ZONES.find(x => x.id === u.zone) || ZONES[0];
     const grade = GRADES[u.grade] || GRADES.B;
     const rentQuoted = u.rent > 0;
@@ -155,25 +155,33 @@
     for (let m = 0; m <= MAXM; m++) { cf[m] = rentN[m] - out[m]; cum[m] = (m ? cum[m - 1] : 0) + cf[m]; }
 
     // a buyer who takes over the plan values the remaining installments at today's money (certificate rate)
-    const unpaidAfter = m => P.plan.reduce((s, p) => {
-      if (p.k === 'maint' || p.m <= m) return s;
-      let df = 1; for (let i = m + 1; i <= p.m; i++) df *= 1 + rmAt(i);
+    // when the cash value is entered or capped, value the remaining installments at the rate that plan implies,
+    // so the unit and its unpaid installments are priced consistently (no instant profit from the cap)
+    const planNM = P.plan.filter(p => p.k !== 'maint');
+    const pvAt = r => planNM.reduce((s, p) => s + p.amt / Math.pow(1 + r, p.m), 0);
+    const implied = (!P.isCash && (u.cash > 0 || cashCapped)) ? bisect(r => pvAt(r) - cashValue, -0.05, 0.2) : NaN;
+    const stepRate = i => isFinite(implied) ? implied : rmAt(i);
+    const unpaidAfter = m => planNM.reduce((s, p) => {
+      if (p.m <= m) return s;
+      let df = 1; for (let i = m + 1; i <= p.m; i++) df *= 1 + stepRate(i);
       return s + p.amt / df;
     }, 0);
     const unpaidNominal = m => P.plan.reduce((s, p) => s + (p.k !== 'maint' && p.m > m ? p.amt : 0), 0);
     const feeAt = m => (A.saleFee + (A.dispTax ? 2.5 : 0) + ((m < delivery || m < P.lastPay) ? (A.transfer || 0) : 0)) / 100;
     const saleNet = m => value(m) * (1 - feeAt(m)) - unpaidAfter(m);
+    const keep = !!opts.keep;
+    const exitAt = m => keep ? value(m) - unpaidAfter(m) : saleNet(m);   // keep: what you own, not sold
     const sellM = Math.max(0, Math.round(A.sellM || 0));
 
     // holding-period cash flows (sale closes at the end of the holding period)
-    const cfH = Array.from(cf.slice(0, HM + 1)); cfH[HM] += saleNet(HM);
+    const cfH = Array.from(cf.slice(0, HM + 1)); cfH[HM] += exitAt(HM);
     const irrM = bisect(r => npvConst(cfH, r), -0.2, 0.2);
     const irr = isFinite(irrM) ? Math.pow(1 + irrM, 12) - 1 : NaN;
     const npv = npvPath(cfH, rmAt);
     let outH = 0, rentH = 0; for (let m = 0; m <= HM; m++) { outH += out[m]; rentH += rentN[m]; }
     const profit = cfH.reduce((s, x) => s + x, 0);
     const roi = outH ? profit / outH : NaN;
-    const multiple = outH ? (rentH + saleNet(HM)) / outH : NaN;
+    const multiple = outH ? (rentH + exitAt(HM)) / outH : NaN;
 
     const g1 = u.area * rentM2 * 12, noi1 = g1 * (1 - opex);
     const allIn = cashValue + P.maintAmt + finCost;
@@ -186,21 +194,30 @@
 
     // yearly table
     const lastPlan = P.plan.length ? Math.max(...P.plan.map(p => p.m)) : 0;
-    const Y = Math.min(15, Math.max(H, Math.ceil(lastPlan / 12), Math.ceil((rentStart + 1) / 12) + 1));
-    const years = []; let coverY = -1;
+    const Y = Math.min(20, Math.max(H, Math.ceil(lastPlan / 12), Math.ceil((rentStart + 1) / 12) + 1));
+    const years = []; let coverY = -1, incomeY = -1, paidCum = 0;
+    const CERT_COUPON = 0.1425;                                   // NBE 5-year certificate, paid monthly
     for (let y = 1; y <= Y; y++) {
       const m0 = y === 1 ? 0 : 12 * (y - 1) + 1, m1 = 12 * y;
       let paid = 0, rent = 0, ins = 0;
       for (let m = m0; m <= m1; m++) { paid += out[m]; rent += rentN[m]; ins += planPay[m]; }
+      paidCum += paid; const certInc = paidCum * CERT_COUPON, yoc = paidCum ? rent / paidCum : NaN;
+      if (incomeY < 0 && rent > 0 && rent >= certInc) incomeY = y;
       const cov = ins > 0 ? rent / ins : NaN;
       if (coverY < 0 && ins > 0 && rent >= ins) coverY = y;
-      years.push({ y, paid, rent, netY: rent - paid, cum: cum[m1], val: value(m1), pos: cum[m1] + saleNet(m1), ins, cov });
+      years.push({ y, paid, rent, netY: rent - paid, cum: cum[m1], val: value(m1), pos: cum[m1] + saleNet(m1), own: cum[m1] + value(m1) - unpaidAfter(m1), ins, cov, paidCum, certInc, yoc });
     }
+
+    // income if kept: by year for 30 years
+    const inc = []; { let pc = 0; for (let y = 1; y <= 30; y++) { let paid = 0, rent = 0; const m0 = y === 1 ? 0 : 12 * (y - 1) + 1;
+      for (let m = m0; m <= 12 * y && m <= MAXM; m++) { paid += out[m]; rent += rentN[m]; }
+      pc += paid; const certInc = pc * CERT_COUPON; inc.push({ y, paidCum: pc, rent, certInc, yoc: pc ? rent / pc : NaN });
+      if (incomeY < 0 && rent > 0 && rent >= certInc) incomeY = y; } }
 
     // growth needed to match the certificate over H
     const beGrowth = bisect(g => {
       const c = Array.from(cf.slice(0, HM + 1));
-      c[HM] += cashValue * (1 - resaleDisc) * Math.pow(1 + g, H) * (1 - feeAt(HM)) - unpaidAfter(HM);
+      c[HM] += cashValue * (1 - resaleDisc) * Math.pow(1 + g, H) * (keep ? 1 : 1 - feeAt(HM)) - unpaidAfter(HM);
       return npvPath(c, rmAt);
     }, -0.6, 1.5);
 
@@ -230,7 +247,7 @@
       ...P, cashValue, cashEstimated, pvPlan, effDisc, resaleDisc, finCost, doFinish, rentFinish, leaseM, rentStart, rentM2,
       rentMonth: g1 / 12, g1, noi1, gross: g1 / P.net, netY: noi1 / allIn, cap: noi1 / value(0), grm: P.net / g1,
       saleH: value(HM), saleNetH: saleNet(HM), roi, multiple, irr, real, usd: (1 + irr) / (1 + dep) - 1, dep, npv,
-      paybackM, saleBeM, coverY, lastPlan, beGrowth, years, cum, saleNet, feeAt, value, line, score, ppm: P.net / u.area,
+      paybackM, saleBeM, coverY, incomeY, inc, keep, exitAt, lastPlan, beGrowth, years, cum, saleNet, feeAt, value, line, score, ppm: P.net / u.area,
       outH, totalPlan, allIn, bench: path, benchAnn, benchReal, sellM, opex, zone: z, grade, rentQuoted, cashCapped,
       delivery, delay: sc.delay || 0, pg, grossOnCash, yieldWarn, beats, unpaidNominal
     };

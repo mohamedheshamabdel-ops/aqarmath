@@ -97,4 +97,14 @@ t('IRR of a known cash flow', () => {
   const r = E.bisect(x => -100 + 110 / (1 + x), -0.5, 1);
   assert(Math.abs(r - 0.1) < 1e-6);
 });
+t('rent starts 3 months after delivery by default', () => {
+  const r = E.compute({ ...base, finish: 'semi', delm: 12 }, A, { H: 5, scn: 'base' });
+  assert.strictEqual(r.rentStart, 15);
+});
+t('keeping the unit skips sale costs and reports income milestones', () => {
+  const sell = E.compute(base, A, { H: 10, scn: 'base' });
+  const keep = E.compute(base, A, { H: 10, scn: 'base', keep: true });
+  assert(keep.irr > sell.irr && keep.keep);
+  assert(keep.years[4].yoc > 0 && keep.years[4].certInc > 0);
+});
 console.log(`\n${pass} passed`);
