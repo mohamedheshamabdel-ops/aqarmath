@@ -2,7 +2,7 @@
 const assert = require('assert');
 const E = require('../engine.js');
 
-const A = { bench: 'auto', bank: 19, inf: 13.9, fx: 54.58, dep: 8, gold: 15, egx: 18, rentG: 10, vac: 15, svc: 5, pg: 14, tax: true,
+const A = { bench: 'auto', bank: 19, inf: 13.9, fx: 54.58, dep: 8, gold: 15, rentG: 10, vac: 15, svc: 5, pg: 14, tax: true,
   saleFee: 2.5, resaleDisc: 10, transfer: 3, dispTax: false, sellM: 3, negot: 5 };
 const base = { zone: 's90', finish: 'full', area: 100, price: 18000000, disc: 0, down: 100, dp2: 0, dp2m: 3, years: 0, freq: 4,
   delm: 0, delpay: 0, maint: 0, maintb: 6, fin: null, lease: null, cash: 0, dev: 'big', source: 'developer', afterDel: 'finish', grade: 'B', rent: 0 };

@@ -88,7 +88,7 @@ const TABS = [['analyze','Analyze a unit','حلّل وحدة','Analyze','حلّ�
 /* ================= state ================= */
 const today = new Date();
 const BASE = {name:'',type:'office',dest:'nc',zone:'s90',grade:'B',finish:'full',area:100,price:18000000,disc:0,down:100,dp2:0,dp2m:3,years:0,freq:4,delm:0,delpay:0,maint:0,maintb:6,fin:null,lease:null,cash:0,rent:0,dev:'big',source:'resale',afterDel:'finish'};
-const DEF_A = {bench:'auto',bank:19,inf:13.9,fx:54.58,dep:8,gold:15,egx:18,pg:14,rentG:10,vac:15,svc:5,tax:true,saleFee:2.5,resaleDisc:10,transfer:3,dispTax:false,sellM:3,negot:5};
+const DEF_A = {bench:'auto',bank:19,inf:13.9,fx:54.58,dep:8,gold:15,pg:14,rentG:10,vac:15,svc:5,tax:true,saleFee:2.5,resaleDisc:10,transfer:3,dispTax:false,sellM:3,negot:5};
 const S = {
   lang:'en', cur:'EGP', scn:'base', exit:'sell', schedAll:false, hold:5, tab:'analyze', news:'all', moreK:false, moreS:false, consent:false,
   contract: today.toISOString().slice(0,10),
@@ -247,7 +247,6 @@ function buildAssume(){
     f('saleFee',tx('Sale commission %','عمولة البيع %'),A.saleFee,0.25,tx('Market 1.5–2.5%','السوق 1.5–2.5%')),
     f('sellM',tx('Months to sell','شهور لحد ما تبيع'),A.sellM,1,tx('Earliest break-even','أقل مدة للتعادل')),
     f('gold',tx('Gold growth / yr %','نمو الدهب سنوياً %'),A.gold,0.5,tx('Assumption','افتراض')),
-    f('egx',tx('EGX30 growth / yr %','نمو EGX30 سنوياً %'),A.egx,0.5,tx('Assumption','افتراض')),
     fld('a-tax',tx('Property tax','الضريبة العقارية'),sel('a-tax',[[1,tx('Included','محسوبة')],[0,tx('Excluded','مش محسوبة')]],A.tax?1:0),tx('10% after 32% deduction','10% بعد خصم 32%')),
     fld('a-dispTax',tx('2.5% sale tax (draft law)','ضريبة بيع 2.5% (مشروع قانون)'),sel('a-dispTax',[[0,tx('Not applied','مش محسوبة')],[1,tx('Apply','احسبها')]],A.dispTax?1:0),tx('Proposed June 2026, not yet in force','مقترحة يونيو 2026، لسه مش مطبقة'))
   ].join('');
@@ -420,7 +419,7 @@ function renderAnalyze(){
   // alternatives (cash basis, per 1M)
   const yrsA=[...Array(H+1).keys()], bg=E.benchGrowth(r.bench,H).map(g=>1e6*g), alt=x=>yrsA.map(t=>1e6*Math.pow(1+x/100,t));
   const conv=arr=>S.cur==='USD'?arr.map((v,t)=>v/fxAt(12*t)):arr, mf=v=>(S.cur==='USD'?'$':'')+compact(v)+(S.cur==='USD'?'':tx('',' ج'));
-  const aser=[{label:unitName('a'),color:'var(--s1)',bold:true,values:conv(r.line),fmt:mf},{label:tx('Bank certificate','شهادة بنكية'),color:'var(--s3)',values:conv(bg),fmt:mf},{label:tx('Gold','دهب'),color:'var(--s4)',values:conv(alt(A.gold)),fmt:mf},{label:'EGX30',color:'var(--s5)',values:conv(alt(A.egx)),fmt:mf}];
+  const aser=[{label:unitName('a'),color:'var(--s1)',bold:true,values:conv(r.line),fmt:mf},{label:tx('Bank certificate','شهادة بنكية'),color:'var(--s3)',values:conv(bg),fmt:mf},{label:tx('Gold','دهب'),color:'var(--s4)',values:conv(alt(A.gold)),fmt:mf}];
   $('#altLegend').innerHTML=aser.map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('');
   const un=lineChart($('#altChart'),{labels:yrsA.map(t=>t===0?tx('Today','النهارده'):tx('Yr ','سنة ')+t),series:aser});
   $('#chartCur').textContent=`${tx('Value in','القيمة')} ${un} ${S.cur==='USD'?tx('USD','دولار'):tx('EGP','جنيه')}`;
@@ -516,7 +515,7 @@ const SRC=()=>[
   ['ctr',tx('Cash price, maintenance and plan terms','سعر الكاش والصيانة وشروط الخطة'),tx('Per unit','حسب الوحدة'),'—',tx('Developer offer / contract','عرض المطوّر / العقد'),''],
   ['asm',tx('Price growth scenarios','سيناريوهات نمو السعر'),`${S.A.pg+E.SCN.low.pg}% · ${S.A.pg}% · ${S.A.pg+E.SCN.high.pg}%`,'—',tx('Assumption: base near inflation; cautious also delays delivery 12 months','افتراض: الواقعي قريب من التضخم؛ المتشائم كمان بيأخر الاستلام سنة'),''],
   ['asm',tx('Resale discount, vacancy, owner costs, rent negotiation','فرق إعادة البيع والشغور والمصاريف والتفاوض'),`${S.A.resaleDisc}% · ${S.A.vac}% · ${S.A.svc}% · ${S.A.negot}%`,'—',tx('Assumption; vacancy for strata offices 15–20%','افتراض؛ الشغور للمكاتب المفرّقة 15–20%'),''],
-  ['asm',tx('Gold, EGX30, EGP decline','الدهب وEGX30 وتراجع الجنيه'),`${S.A.gold}% · ${S.A.egx}% · ${S.A.dep}%`,'—',tx('Assumption','افتراض'),'']
+  ['asm',tx('Gold, EGP decline','الدهب وتراجع الجنيه'),`${S.A.gold}% · ${S.A.dep}%`,'—',tx('Assumption','افتراض'),'']
 ];
 function renderSources(){
   const typ={off:tx('Official','رسمي'),mkt:tx('Market data','بيانات سوق'),ctr:tx('Contract','عقد'),asm:tx('Assumption','افتراض')};
