@@ -341,3 +341,4 @@ footer.foot{border-top:1px solid var(--line);padding-block:22px;color:var(--mute
 #printFor{font-weight:600;margin-top:4px}
 @media print{ .dlg{display:none!important} }
 .dlg small.err{font-size:12px;color:var(--bad);font-weight:600}
+.swarn p.good{background:var(--good-soft);color:var(--good)}

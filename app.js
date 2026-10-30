@@ -294,10 +294,10 @@ function renderAnalyze(){
   $('#storyBars').innerHTML=bv.map(([l,v,c])=>`<div class="sb ${c}"><span class="l">${l}</span><span class="track"><i class="${v<0?'neg':''}" style="width:${isFinite(v)?Math.max(2,Math.abs(v)/bm*100):0}%"></i></span><b class="num">${isFinite(v)?pct(v):'—'}</b></div>`).join('')+`<small>${tx('Yearly return after inflation · nominal IRR in the details','العائد السنوي بعد التضخم · الـIRR الاسمي في التفاصيل')}</small>`;
   // warnings
   const warns=[];
-  if (r.yieldWarn) warns.push(tx(`The rent is ${pct(r.grossOnCash,0)} of the cash value a year. Office rents in New Cairo rarely pass 12%, so check the price or the rent.`,`الإيجار ${pct(r.grossOnCash,0)} من قيمة الكاش في السنة. إيجارات المكاتب في التجمع نادراً ما تعدّي 12%، فراجع السعر أو الإيجار.`));
+  const goods=[]; if (r.yieldWarn) goods.push(tx(`Good price for the rent: the rent is ${pct(r.grossOnCash,0)} of the cash value a year, while New Cairo offices usually give 8–10%.`,`سعر كويس قصاد الإيجار: الإيجار ${pct(r.grossOnCash,0)} من قيمة الكاش في السنة، والطبيعي لمكاتب التجمع 8–10%.`));
   if (r.cashCapped) warns.push(tx(`This plan implies a cash discount above 30%. We capped it at 30%; ask the developer for the real cash price.`,`الخطة دي معناها خصم كاش أكتر من 30%. وقفناه عند 30%؛ اسأل المطوّر على سعر الكاش الحقيقي.`));
   if (r.delay) warns.push(tx(`Cautious scenario: delivery is ${r.delay} months late, so rent starts later.`,`السيناريو المتشائم: الاستلام متأخر ${r.delay} شهر، فالإيجار بيبدأ متأخر.`));
-  $('#storyWarn').innerHTML=warns.map(w=>`<p>! ${w}</p>`).join('');
+  $('#storyWarn').innerHTML=goods.map(g=>`<p class="good">✓ ${g}</p>`).join('')+warns.map(w=>`<p>! ${w}</p>`).join('');
   $('#vchip').className='vchip no-print '+(beats?'good':'warn');
   $('#vchip').innerHTML=`<span>${beats?'✓ '+tx('Beats the certificate','أحسن من الشهادة'):'! '+tx('Below the certificate','أقل من الشهادة')}</span><b class="num">${okI?pct(r.real):'—'} <small>${tx('vs','قصاد')} ${pct(r.benchReal)}</small></b><span class="go">${tx('See why ↓','شوف ليه ↓')}</span>`;
   const items=[];
