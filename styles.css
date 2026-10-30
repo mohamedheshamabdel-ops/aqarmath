@@ -127,7 +127,6 @@ details.group[open] > summary::after{content:"−"}
 .btn.wa.off{opacity:.55}
 .disclose-line,.privacy-line{margin:10px 0 0;font-size:12.5px;line-height:1.5;color:var(--muted)}
 .privacy-line .linkbtn{font-size:12.5px}
-#brokerPanel summary{font-size:14px}
 #rentTable tr.total td{font-weight:700;border-top:2px solid var(--line)}
 
 /* actions + consult */

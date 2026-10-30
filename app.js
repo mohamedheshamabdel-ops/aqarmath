@@ -88,7 +88,7 @@ const today = new Date();
 const BASE = {name:'',type:'office',dest:'nc',zone:'s90',grade:'B',finish:'full',area:100,price:18000000,disc:0,down:100,dp2:0,dp2m:3,years:0,freq:4,delm:0,delpay:0,maint:0,maintb:6,fin:null,lease:null,cash:0,rent:0,dev:'big',source:'resale',afterDel:'finish'};
 const DEF_A = {bench:'auto',bank:19,inf:13.9,fx:54.58,dep:8,gold:15,egx:18,pg:14,rentG:10,vac:15,svc:5,tax:true,saleFee:2.5,resaleDisc:10,transfer:3,dispTax:false,sellM:3,negot:5};
 const S = {
-  lang:'en', cur:'EGP', scn:'base', exit:'sell', schedAll:false, hold:5, tab:'analyze', news:'all', moreK:false, moreS:false, broker:'', consent:false,
+  lang:'en', cur:'EGP', scn:'base', exit:'sell', schedAll:false, hold:5, tab:'analyze', news:'all', moreK:false, moreS:false, consent:false,
   contract: today.toISOString().slice(0,10),
   A:{...DEF_A},
   U:{ a:{...BASE, zone:'d5', finish:'semi', area:100, price:20000000, down:15, years:5, delm:12, maint:8, dev:'mid', source:'developer'},
@@ -109,12 +109,12 @@ function loadState(){
     if (saved.a) S.U.a = {...BASE, ...saved.a};
     if (saved.b) S.U.b = {...BASE, ...saved.b};
     if (saved.A) S.A = {...DEF_A, ...saved.A};
-    ['hold','scn','cur','broker','contract','exit'].forEach(k => { if (saved[k] !== undefined) S[k] = saved[k]; });
+    ['hold','scn','cur','contract','exit'].forEach(k => { if (saved[k] !== undefined) S[k] = saved[k]; });
     if (saved.l === 'ar' || saved.l === 'en') S.lang = saved.l;
     S._fromLink = !!saved._fromLink;
   }
 }
-let saveT; function saveState(){ clearTimeout(saveT); saveT = setTimeout(() => store.set('aqm:v3', JSON.stringify({a:S.U.a,b:S.U.b,A:S.A,hold:S.hold,scn:S.scn,exit:S.exit,cur:S.cur,broker:S.broker,contract:S.contract})), 250); }
+let saveT; function saveState(){ clearTimeout(saveT); saveT = setTimeout(() => store.set('aqm:v3', JSON.stringify({a:S.U.a,b:S.U.b,A:S.A,hold:S.hold,scn:S.scn,exit:S.exit,cur:S.cur,contract:S.contract})), 250); }
 
 /* ================= helpers ================= */
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -282,8 +282,8 @@ function renderAnalyze(){
   $('#storyBadge').innerHTML = beats ? `✓ ${tx('Beats the bank certificate','أحسن من الشهادة البنكية')}` : `! ${tx('Below the bank certificate','أقل من الشهادة البنكية')}`;
   const keep=S.exit==='keep';
   $('#storyTitle').innerHTML = keep && okI ? tx(
-    `Kept for ${H} years, this unit earns <b>${pct(r.real)}</b> a year after inflation, counting rent and what the unit is worth (not sold). A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b>.`,
-    `لو احتفظت بيها ${H} سنة، الوحدة بتكسّبك <b>${pct(r.real)}</b> في السنة بعد التضخم، بحساب الإيجار وقيمة الوحدة (من غير بيع). ${T('bench','الشهادة البنكية')} بتكسب <b>${pct(r.benchReal)}</b>.`) : !okI ? tx(
+    `${H>=30?'Kept for good (we count 30 years)':`Kept for ${H} years`}, this unit earns <b>${pct(r.real)}</b> a year after inflation, counting rent and what the unit is worth (not sold). A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b>.`,
+    `${H>=30?'لو احتفظت بيها على طول (بنحسب 30 سنة)':`لو احتفظت بيها ${H} سنة`}، الوحدة بتكسّبك <b>${pct(r.real)}</b> في السنة بعد التضخم، بحساب الإيجار وقيمة الوحدة (من غير بيع). ${T('bench','الشهادة البنكية')} بتكسب <b>${pct(r.benchReal)}</b>.`) : !okI ? tx(
     `If you sell after ${H} years, this unit does not get your money back in this scenario. A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b> a year after inflation.`,
     `لو بعت بعد ${H} سنين، الوحدة دي مش بترجّع فلوسك في السيناريو ده. ${T('bench','الشهادة البنكية')} بتكسب <b>${pct(r.benchReal)}</b> في السنة بعد التضخم.`) : tx(
     `After inflation, this unit earns <b>${pct(r.real)}</b> a year over ${H} years. A ${T('bench','bank certificate')} earns <b>${pct(r.benchReal)}</b> — ${beats?`<b>${fmt(gap,1)} points less</b>`:`<b>${fmt(-gap,1)} points more</b>`}.`,
@@ -303,7 +303,7 @@ function renderAnalyze(){
   items.push(r.n ? tx(`You pay ${egp(r.dp)} now, then ${r.n} installments of ${egp(r.inst)} until ${monthY(r.lastPay)}. Total plan: ${egp(r.totalPlan)}.`,`هتدفع ${egp(r.dp)} دلوقتي، وبعدها ${r.n} قسط كل واحد ${egp(r.inst)} لحد ${monthY(r.lastPay)}. إجمالي الخطة: ${egp(r.totalPlan)}.`)
                  : tx(`You pay ${egp(r.totalPlan)} in cash${r.maintAmt?', maintenance included':''}.`,`هتدفع ${egp(r.totalPlan)} كاش${r.maintAmt?'، شامل الصيانة':''}.`));
   items.push(tx(`First rent around ${monthY(r.rentStart+1)}: about ${egp(r.rentMonth)} a month (${fmt(r.rentM2)} EGP/m², ${T('rent',r.rentQuoted?'your quote':'market rent')}). ${T('noi','Net to you')}: ${egp(r.noi1/12)} a month.`,`أول إيجار حوالي ${monthY(r.rentStart+1)}: تقريباً ${egp(r.rentMonth)} في الشهر (${fmt(r.rentM2)} ج/م²، ${T('rent',r.rentQuoted?'عرضك':'الإيجار السوقي')}). ${T('noi','الصافي ليك')}: ${egp(r.noi1/12)} في الشهر.`));
-  const yrH=r.inc[H-1];
+  const yrH=r.inc[Math.min(H,20)-1];
   if (keep) items.push(r.incomeY>0 ? tx(`From year ${r.incomeY} your net rent is more than a certificate would pay on the same money (${T('income','rent beats certificate interest')}). By year ${yrH.y} it is about ${egp(yrH.rent/12)} a month, ${pct(yrH.yoc)} on what you paid.`,`من السنة ${r.incomeY} الإيجار الصافي بيبقى أكتر من فايدة الشهادة على نفس الفلوس (${T('income','الإيجار أعلى من فايدة الشهادة')}). في السنة ${yrH.y} بيبقى حوالي ${egp(yrH.rent/12)} في الشهر، يعني ${pct(yrH.yoc)} على اللي دفعته.`)
                          : tx(`Within 30 years the net rent stays below what a certificate would pay on the same money; by year ${yrH.y} it is about ${egp(yrH.rent/12)} a month (${pct(yrH.yoc)} on what you paid).`,`خلال 30 سنة الإيجار الصافي فاضل أقل من فايدة الشهادة على نفس الفلوس؛ في السنة ${yrH.y} بيبقى حوالي ${egp(yrH.rent/12)} في الشهر (${pct(yrH.yoc)} على اللي دفعته).`));
   if (!keep) items.push(r.saleBeM>0 ? tx(`If you sell, you get all your money back from ${monthY(r.saleBeM)} (${yrs(r.saleBeM)}), after resale discount and fees — the ${T('salebe','break-even if sold')}.`,`لو بعت، هترجع كل فلوسك من ${monthY(r.saleBeM)} (${yrs(r.saleBeM)})، بعد فرق إعادة البيع والرسوم — ده ${T('salebe','التعادل لو بعت')}.`)
@@ -461,7 +461,7 @@ function preparePrint(){
   const u=S.U.a;
   $('#printSub').textContent = (S.U.a.name ? S.U.a.name + ' · ' : '') + unitLine(u);
   $('#printDate').textContent = new Date().toLocaleDateString(ar()?'ar-EG-u-nu-latn':'en-GB',{day:'numeric',month:'long',year:'numeric'});
-  $('#printFoot').innerHTML = `${S.broker?`<b>${tx('Prepared by','إعداد')} ${S.broker.replace(/</g,'&lt;')}</b> · `:''}${tx('Calculated with AqarMath · aqarmath.vercel.app','محسوب بـ AqarMath · aqarmath.vercel.app')}<br>${tx('Estimates for illustration, not investment advice. Assumptions and sources are on the website.','الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الافتراضات والمصادر موجودة على الموقع.')}<br>${tx('Free consultation','استشارة مجانية')}: ${tx('Hesham Rodiny','هشام روديني')} · ${PHONE_TXT}`;
+  $('#printFoot').innerHTML = `${tx('Calculated with AqarMath · aqarmath.vercel.app','محسوب بـ AqarMath · aqarmath.vercel.app')}<br>${tx('Estimates for illustration, not investment advice. Assumptions and sources are on the website.','الأرقام تقديرية للتوضيح وليست نصيحة استثمارية. الافتراضات والمصادر موجودة على الموقع.')}<br>${tx('Free consultation','استشارة مجانية')}: ${tx('Hesham Rodiny','هشام روديني')} · ${PHONE_TXT}`;
 }
 async function copyShare(){
   const link=shareLink(); $('#shareInput').value=link; $('#shareOut').hidden=false;
@@ -616,11 +616,12 @@ function applyStatic(){
   $$('[data-ar]').forEach(el=>{ if(!('en' in el.dataset)) el.dataset.en=el.textContent; el.textContent=ar()?el.dataset.ar:el.dataset.en; });
   $('#langBtn').textContent=ar()?'English':'العربية';
   document.title=ar()?'AqarMath · العقار بالأرقام':'AqarMath · Real estate, by the numbers';
-  $('#broker').value = S.broker || '';
   $$('#curSeg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.cur===S.cur));
   $$('#scnSeg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.scn===S.scn));
   $$('#exitSeg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.exit===S.exit));
   $('#holdLab').textContent = S.exit==='keep' ? tx('Keep for','هحتفظ بيها') : tx('Sell after','هبيع بعد');
+  const forever=$('#hold option[value="30"]'); if(forever){ forever.hidden = S.exit!=='keep'; forever.disabled = S.exit!=='keep'; }
+  if (S.exit!=='keep' && S.hold===30) S.hold=10;
   $('#hold').value = String(S.hold);
 }
 function renderAll(){
@@ -658,7 +659,6 @@ document.addEventListener('input',e=>{
   if (id==='hold'){ S.hold=+el.value; renderAll(); return; }
   if (id==='contract'){ if(el.value) S.contract=el.value; renderAll(); return; }
   if (id==='consent'){ S.consent=el.checked; updateLinks(); saveState(); return; }
-  if (id==='broker'){ S.broker=el.value.slice(0,60); saveState(); }
 });
 document.addEventListener('change',e=>{
   const el=e.target;
@@ -677,7 +677,7 @@ document.addEventListener('click',e=>{
   if (b.dataset.focus){ const d=$('#moreGroup'); if(d){ d.open=true; moreOpen=true; } const n=document.getElementById(b.dataset.focus); if(n){ n.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>n.focus(),300); } return; }
   if (b.dataset.tab) return showTab(b.dataset.tab);
   if (b.dataset.cur){ S.cur=b.dataset.cur; $$('#curSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); return renderAll(); }
-  if (b.dataset.exit){ S.exit=b.dataset.exit; if(S.exit==='keep'&&S.hold<10){ S.hold=15; } applyStatic(); return renderAll(); }
+  if (b.dataset.exit){ S.exit=b.dataset.exit; if(S.exit==='keep'&&S.hold<10){ S.hold=30; } applyStatic(); return renderAll(); }
   if (b.id==='schedAll'){ S.schedAll=!S.schedAll; return renderAnalyze(); }
   if (b.dataset.scn){ S.scn=b.dataset.scn; $$('#scnSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); return renderAll(); }
   if (b.dataset.cat){ S.news=b.dataset.cat; return renderNews(); }
@@ -685,7 +685,7 @@ document.addEventListener('click',e=>{
   if (b.id==='pdfBtn'){ preparePrint(); window.print(); return; }
   if (b.id==='shareBtn' || b.id==='shareCopy2'){ copyShare(); return; }
   if (b.id==='storyMore'){ S.moreS=!S.moreS; return renderAnalyze(); }
-  if (b.id==='clearData'){ try{ localStorage.removeItem('aqm:v3'); localStorage.removeItem('aqm:v2'); localStorage.removeItem('lang'); }catch(_){} S.consent=false; S.broker=''; toast(tx('Cleared from this device','اتمسحت من الجهاز')); setTimeout(()=>location.replace(location.pathname),600); return; }
+  if (b.id==='clearData'){ try{ localStorage.removeItem('aqm:v3'); localStorage.removeItem('aqm:v2'); localStorage.removeItem('lang'); }catch(_){} S.consent=false; toast(tx('Cleared from this device','اتمسحت من الجهاز')); setTimeout(()=>location.replace(location.pathname),600); return; }
   if (b.id==='langBtn'){ S.lang=ar()?'en':'ar'; store.set('lang',S.lang); rebuild(); }
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.hidden=true; });

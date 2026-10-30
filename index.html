@@ -63,7 +63,7 @@
           <button type="button" aria-pressed="true" data-exit="sell" data-ar="هبيع">Sell</button><button type="button" aria-pressed="false" data-exit="keep" data-ar="هحتفظ للدخل">Keep for income</button>
         </div>
         <label class="field-inline" for="hold"><span id="holdLab"></span>
-          <select id="hold" class="plain" style="width:auto"><option value="3" data-ar="3 سنين">3 years</option><option value="5" selected data-ar="5 سنين">5 years</option><option value="7" data-ar="7 سنين">7 years</option><option value="10" data-ar="10 سنين">10 years</option><option value="15" data-ar="15 سنة">15 years</option><option value="20" data-ar="20 سنة">20 years</option></select>
+          <select id="hold" class="plain" style="width:auto"><option value="3" data-ar="3 سنين">3 years</option><option value="5" selected data-ar="5 سنين">5 years</option><option value="7" data-ar="7 سنين">7 years</option><option value="10" data-ar="10 سنين">10 years</option><option value="15" data-ar="15 سنة">15 years</option><option value="20" data-ar="20 سنة">20 years</option><option value="30" data-ar="على طول — مش هبيع">For good — never selling</option></select>
         </label>
       </div>
 
@@ -133,11 +133,6 @@
         <div class="scroll"><table class="t" id="rentTable"></table></div>
         <p class="note" id="rentNote"></p>
       </div>
-
-      <details class="panel no-print" id="brokerPanel">
-        <summary data-ar="بروكر؟ حط اسمك على التقرير (اختياري)">Broker? Put your name on the report (optional)</summary>
-        <label class="field-inline mt" for="broker"><span data-ar="الاسم اللي يظهر في الـPDF">Name shown on the PDF</span><input id="broker" style="border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;width:200px;background:var(--surface)"></label>
-      </details>
 
       <details class="panel" id="assumePanel">
         <summary data-ar="الافتراضات ومصادر الأرقام">Assumptions and sources</summary>
