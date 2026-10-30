@@ -11,15 +11,25 @@
     { id: 'bank', en: 'Banking District', ar: 'المنطقة البنكية' },
     { id: 'd5',   en: 'Fifth District',   ar: 'الحي الخامس' }
   ];
-  /* Rent by building grade, from Knight Frank Cairo office review Q2 2026 (USD/m²/year,
-     converted at 54.58 EGP and divided by 12). Grade A business park ≈ $348, Grade B ≈ $283.5.
-     Semi-finished and core & shell rents are assumed shares of the fitted rent. */
+  /* Office rental listings in New Cairo (asking rent, EGP/month), read by hand from public listing pages on 30 Oct 2026.
+     Rent level by scenario, for a fitted office: cautious = average, base = average + 10%, strong = highest listing. */
   const FX_REF = 54.58;
-  const GRADES = {
-    A: { en: 'Grade A business park', ar: 'بيزنس بارك Grade A', usdYr: 348.0 },
-    B: { en: 'Grade B building', ar: 'مبنى Grade B', usdYr: 283.5 }
-  };
-  Object.values(GRADES).forEach(g => { g.full = Math.round(g.usdYr * FX_REF / 12 / 10) * 10; });
+  const LISTINGS = [
+    { src: 'Property Finder', url: 'https://www.propertyfinder.eg/en/plp/commercial-rent/office-space-for-rent-cairo-new-cairo-city-the-5th-settlement-south-teseen-st-bank-center-street-8378168.html', en: 'South 90th, Bank Center St', ar: 'التسعين الجنوبي، شارع البنوك', area: 350, rent: 472500, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/en/listing/6665385-for-rent-cairo-new-cairo-90th-street-south-teseen-st/', en: 'South 90th St', ar: 'التسعين الجنوبي', area: 750, rent: 1312500, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/en/listing/6707600-for-rent/', en: 'El Choueifat St', ar: 'شارع الشويفات', area: 148, rent: 264328, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/ar/listing/7109166-for-rent/', en: 'The Plateau, District 5', ar: 'ذا بلاتوه، الحي الخامس', area: 136, rent: 159000, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/ar/listing/6969604-for-rent-cairo-new-cairo-compounds-district-5-the-plateau-district-5/', en: 'The Plateau, District 5', ar: 'ذا بلاتوه، الحي الخامس', area: 74, rent: 88000, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/ar/listing/7105373-for-rent/', en: 'The Plateau, District 5', ar: 'ذا بلاتوه، الحي الخامس', area: 59, rent: 65000, fin: 'full' },
+    { src: 'Aqarmap', url: 'https://aqarmap.com.eg/ar/listing/6956621-for-rent/', en: 'Eastwalk, Gamal Abdel Nasser Axis', ar: 'إيست ووك، محور جمال عبد الناصر', area: 165, rent: 120000, fin: 'full' },
+    { src: 'Property Finder', url: 'https://www.propertyfinder.eg/en/plp/commercial-rent/office-space-for-rent-cairo-new-cairo-city-the-5th-settlement-5th-settlement-compounds-cairo-business-park-2Ptce1F0hdI.html', en: 'Cairo Business Park', ar: 'كايرو بيزنس بارك', area: 345, rent: 258750, fin: 'semi' }
+  ];
+  LISTINGS.forEach(l => { l.pm = l.rent / l.area; });
+  const fittedPm = LISTINGS.filter(l => l.fin === 'full').map(l => l.pm);
+  const avgPm = fittedPm.reduce((a, b) => a + b, 0) / fittedPm.length;
+  const r10 = v => Math.round(v / 10) * 10;
+  const RENT_LEVEL = { low: r10(avgPm), base: r10(avgPm * 1.10), high: r10(Math.max(...fittedPm)) };
+  const RENT_RULE = { low: 'avg', base: 'avg+10', high: 'max' };
   const FIN_SHARE  = { full: 1, semi: 0.70, core: 0.50 };    // rent of a unit as is, vs fitted
   const FIN_COST   = { full: 0, semi: 12000, core: 25000 };  // EGP per m² to reach "fitted"
   const FIN_MONTHS = { full: 0, semi: 0, core: 1 };          // extra months when works cannot overlap marketing
@@ -28,9 +38,9 @@
   const CASH_DISC_MAX = 0.30;                                 // cap on the estimated cash discount
   /* pg is added to the base price-growth input; delay pushes delivery (and rent) back. */
   const SCN = {
-    low:  { pg: -6, rf: 0.90, dep: +4, delay: 12 },
-    base: { pg:  0, rf: 1.00, dep:  0, delay: 0 },
-    high: { pg: +8, rf: 1.10, dep: -3, delay: 0 }
+    low:  { pg: -6, dep: +4, delay: 12 },
+    base: { pg:  0, dep:  0, delay: 0 },
+    high: { pg: +8, dep: -3, delay: 0 }
   };
   /* Bank certificates used as the safe alternative (NBE, 23 Oct 2026).
      nbe5: 14.25% paid monthly, reinvested -> effective yearly rate.
@@ -139,11 +149,15 @@
     const finCost = doFinish ? (u.fin ?? FIN_COST[u.finish]) * u.area : 0;
     const leaseM = u.lease ?? (LEASE_UP[u.finish] + (doFinish ? FIN_MONTHS[u.finish] : 0));
     const z = ZONES.find(x => x.id === u.zone) || ZONES[0];
-    const grade = GRADES[u.grade] || GRADES.B;
-    const rentQuoted = u.rent > 0;
-    const rentM2 = rentQuoted ? u.rent * sc.rf : grade.full * FIN_SHARE[rentFinish] * sc.rf * (1 - (A.negot || 0) / 100);
+    const rentQuoted = u.rent > 0, scnKey = SCN[opts.scn] ? opts.scn : 'base';
+    const rentLevel = RENT_LEVEL[scnKey];
+    // rent per m² per month at today's prices
+    const rentToday = rentQuoted ? u.rent : rentLevel * FIN_SHARE[rentFinish] * (1 - (A.negot || 0) / 100);
     const opex = A.vac / 100 + A.svc / 100 + (A.tax ? 0.10 * (1 - 0.32) : 0);
     const rentStart = delivery + leaseM;
+    // rents rise every year until the tenant moves in: compound the yearly increase up to the year of first rent
+    const preYears = Math.floor(rentStart / 12);
+    const rentM2 = rentToday * Math.pow(1 + A.rentG / 100, preYears);
 
     const out = new Float64Array(MAXM + 1), rentN = new Float64Array(MAXM + 1), planPay = new Float64Array(MAXM + 1);
     P.plan.forEach(p => { if (p.m <= MAXM) { out[p.m] += p.amt; if (p.k === 'inst' || p.k === 'dp2' || p.k === 'del') planPay[p.m] += p.amt; } });
@@ -234,25 +248,25 @@
 
     // score out of 100: return vs certificate 50, rent level 20, delivery 15, developer 15
     const sRet = clamp(25 + (real - benchReal) * 250, 0, 50);
-    const sRent = clamp(20 * rentM2 / (grade.full * sc.rf), 0, 20);
+    const sRent = clamp(20 * rentToday / rentLevel, 0, 20);
     const sDel = delivery <= 0 ? 15 : delivery <= 12 ? 10 : delivery <= 24 ? 6 : 3;
     const sDev = { big: 15, mid: 9, new: 4 }[u.dev] ?? 8;
     let score = Math.round(sRet + sRent + sDel + sDev);
     if (!(npv >= 0)) score = Math.min(score, 49);
 
     let totalPlan = 0; P.plan.forEach(p => totalPlan += p.amt);
-    const grossOnCash = g1 / cashValue, yieldWarn = grossOnCash > YIELD_CHECK;
+    const grossOnCash = u.area * rentToday * 12 / cashValue, yieldWarn = grossOnCash > YIELD_CHECK;
     const beats = isFinite(real) && real >= benchReal;
     return {
       ...P, cashValue, cashEstimated, pvPlan, effDisc, resaleDisc, finCost, doFinish, rentFinish, leaseM, rentStart, rentM2,
       rentMonth: g1 / 12, g1, noi1, gross: g1 / P.net, netY: noi1 / allIn, cap: noi1 / value(0), grm: P.net / g1,
       saleH: value(HM), saleNetH: saleNet(HM), roi, multiple, irr, real, usd: (1 + irr) / (1 + dep) - 1, dep, npv,
       paybackM, saleBeM, coverY, incomeY, inc, keep, exitAt, lastPlan, beGrowth, years, cum, saleNet, feeAt, value, line, score, ppm: P.net / u.area,
-      outH, totalPlan, allIn, bench: path, benchAnn, benchReal, sellM, opex, zone: z, grade, rentQuoted, cashCapped,
+      outH, totalPlan, allIn, bench: path, benchAnn, benchReal, sellM, opex, zone: z, rentQuoted, cashCapped, rentToday, rentLevel, scnKey, preYears,
       delivery, delay: sc.delay || 0, pg, grossOnCash, yieldWarn, beats, unpaidNominal
     };
   }
 
-  const api = { ZONES, GRADES, FIN_SHARE, FX_REF, YIELD_CHECK, CASH_DISC_MAX, FIN_COST, FIN_MONTHS, LEASE_UP, SCN, NBE5_EFF, benchPath, benchAnnualised, benchGrowth, validate, buildPlan, compute, bisect };
+  const api = { ZONES, LISTINGS, RENT_LEVEL, RENT_RULE, FIN_SHARE, FX_REF, YIELD_CHECK, CASH_DISC_MAX, FIN_COST, FIN_MONTHS, LEASE_UP, SCN, NBE5_EFF, benchPath, benchAnnualised, benchGrowth, validate, buildPlan, compute, bisect };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.AQM = api;
 })(typeof window !== 'undefined' ? window : globalThis);
